@@ -37,7 +37,7 @@ const useLoginForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post("/api/user/auth/login", data);
+      const response = await axiosInstance.post("/auth/login", data);
       const result = await response.data;
       toast.success(result.message);
       dispatch(login(result.token));

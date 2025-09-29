@@ -30,17 +30,17 @@ const Navbar = () => {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/turfs">Turfs</Link>
+              <Link to="/turfs">PickleTime</Link>
             </li>
           </ul>
         </div>
         <Link to="/" className="btn btn-ghost normal-case text-xl">
           <img
             src="/logo.png"
-            alt="TurfSpot"
+            alt="PickleTime"
             className="h-10 w-10 mask mask-squircle"
           />
-          TurfSpot
+          PickleTime
         </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
@@ -49,7 +49,7 @@ const Navbar = () => {
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/turfs">Turfs</Link>
+            <Link to="/turfs">PickleTime</Link>
           </li>
         </ul>
       </div>
