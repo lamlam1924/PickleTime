@@ -52,17 +52,21 @@ const useSignUpForm = () => {
   const onSubmit = async (data) => {
      setLoading(true);
     try {
+      const payload = {
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        firstName: data.name,
+        lastName: "",
+        phoneNumber: data.phone
+      };
       const response = await axiosInstance.post(
-        "/api/owner/auth/register",
-        data
+        "/api/auth/register",
+        payload
       );
       const result = await response.data;
-        dispatch(login({ token: result.token, role: result.role }));
-        if (result.role === "owner") {
-          navigate("/owner");
-        } else if (result.role === "admin") {
-          navigate("/admin");
-        }
+        dispatch(login(result.token));
+        navigate("/auth");
         
     } catch (error){
        if (error.response) {
