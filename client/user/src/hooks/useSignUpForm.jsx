@@ -43,9 +43,17 @@ const useSignUpForm = () => {
 
     setLoading(true);
     try {
+      const payload = {
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        firstName: data.name,
+        lastName: "",
+        phoneNumber: data.phone || undefined
+      };
       const response = await axiosInstance.post(
-        "/api/user/auth/register",
-        data
+        "/api/auth/register",
+        payload
       );
       const result = await response.data;
       toast.success(result.message);

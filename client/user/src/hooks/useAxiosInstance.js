@@ -1,9 +1,12 @@
 import axios from "axios";
 
+const API_HTTP = "http://localhost:5104";
+const API_HTTPS = "https://localhost:7178";
+
 const axiosInstance = axios.create({
-  // baseURL: "http://localhost:1234",
   // baseURL: "https://turf-spot-be.vercel.app",
-  baseURL: "https://localhost:7178/api",
+  // baseURL: "http://localhost:5104",
+  baseURL: "https://localhost:7178",
 });
 
 axiosInstance.interceptors.request.use((config) => {
