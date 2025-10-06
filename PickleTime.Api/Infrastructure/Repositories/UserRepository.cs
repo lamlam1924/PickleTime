@@ -3,7 +3,7 @@ using PickleTime.Api.Application.Contracts.Auth;
 using PickleTime.Api.Domain.Entities;
 using PickleTime.Api.Infrastructure.Data;
 
-namespace PickleTime.Api.Infrastructure.Repositories.Bookings;
+namespace PickleTime.Api.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {

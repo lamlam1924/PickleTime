@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Application.Contracts.Facilities;
+using PickleTime.Api.Application.Contracts.Files;
+using PickleTime.Api.Application.Contracts.Images;
 using PickleTime.Api.Application.Services;
+using PickleTime.Api.Application.Services.MappingProfiles;
 using PickleTime.Api.Common.Helpers;
 using PickleTime.Api.Infrastructure.Data;
-using PickleTime.Api.Infrastructure.Repositories.Bookings;
+using PickleTime.Api.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +21,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PickleTimeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Đăng ký Service và Jwt helper
+// Đăng ký Repository
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICourtImageRepository, CourtImageRepository>();
+builder.Services.AddScoped<IFacilityRepository, FacilityRepository>();
+builder.Services.AddScoped<IFacilityImageRepository, FacilityImageRepository>();
+
+//Đăng ký Service
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<JwtService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICourtImageService, CourtImageService>();
+builder.Services.AddScoped<IFacilityService, FacilityService>();
+builder.Services.AddScoped<IFacilityImageService, FacilityImageService>();
+
+// Đăng ký AutoMapper
+builder.Services.AddAutoMapper(typeof(FacilityProfile));
+
+// Đăng ký Cloudinary
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<IFileStorageService, CloudinaryService>();
 
 // Đăng ký CORS
 builder.Services.AddCors(options =>
@@ -86,4 +106,3 @@ app.UseCors("AllowFrontend");
 app.MapControllers();
 
 app.Run();
-

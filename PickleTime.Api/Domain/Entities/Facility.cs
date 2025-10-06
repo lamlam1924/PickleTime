@@ -45,6 +45,8 @@ public partial class Facility
 
     public virtual ICollection<Court> Courts { get; set; } = new List<Court>();
 
+    public virtual ICollection<FacilityImage> FacilityImages { get; set; } = new List<FacilityImage>();
+
     public virtual ICollection<FacilityOperatingHour> FacilityOperatingHours { get; set; } = new List<FacilityOperatingHour>();
 
     public virtual User? ManagerUser { get; set; }

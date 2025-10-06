@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import ThemeSwitcher from "../common/ThemeSwitcher";
-
+//render lúc chưa login
 const Navbar = () => {
   return (
     <div className="navbar bg-base-100 fixed top-0 z-50 shadow-md animate-slide-in-top">
@@ -27,10 +27,10 @@ const Navbar = () => {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">Trang chủ</Link>
             </li>
             <li>
-              <Link to="/turfs">PickleTime</Link>
+              <Link to="/turfs">Tìm kiếm</Link>
             </li>
           </ul>
         </div>
@@ -46,17 +46,17 @@ const Navbar = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/">Trang chủ</Link>
           </li>
           <li>
-            <Link to="/turfs">PickleTime</Link>
+            <Link to="/turfs">Tìm kiếm</Link>
           </li>
         </ul>
       </div>
       <div className="navbar-end">
         <ThemeSwitcher />
         <Link to="/login" className="btn btn-ghost">
-          Login
+          Đăng nhập
         </Link>
       </div>
     </div>

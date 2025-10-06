@@ -12,13 +12,13 @@ const SearchTurf = ({ onSearch }) => {
     <form onSubmit={handleSearch} className="flex w-full max-w-xl ml-auto mb-8 ">
       <input
         type="text"
-        placeholder="Search for turfs..."
+        placeholder="Bạn muốn chơi ở đâu?"
         className="input input-bordered w-full"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
       <button type="submit" className="btn btn-primary ml-2">
-        Search
+        Tìm kiếm
       </button>
     </form>
   );

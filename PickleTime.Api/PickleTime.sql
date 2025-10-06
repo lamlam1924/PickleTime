@@ -714,14 +714,46 @@ GO
 
 /*******************************************************************************
 *******************************************************************************/
+--01/10/2025
+ALTER TABLE CourtImages
+    ADD PublicId NVARCHAR(255) NULL;
+GO
+
+/*******************************************************************************
+*******************************************************************************/
+--06/10/2025
+CREATE TABLE FacilityImages (
+                                ImageId INT IDENTITY(1,1) PRIMARY KEY,
+                                FacilityId INT NOT NULL,
+                                ImageUrl NVARCHAR(500) NOT NULL,
+                                IsMainImage BIT NOT NULL DEFAULT 0,
+                                DisplayOrder INT NOT NULL DEFAULT 0,
+                                Description NVARCHAR(500) NULL,
+                                CourtImageId INT NULL,
+                                IsDeleted BIT NOT NULL DEFAULT 0,
+                                PublicId NVARCHAR(250) NULL,
+
+                                CONSTRAINT FK_FacilityImages_Facilities FOREIGN KEY (FacilityId)
+                                    REFERENCES Facilities(FacilityId) ON DELETE CASCADE,
+
+                                CONSTRAINT FK_FacilityImages_CourtImages FOREIGN KEY (CourtImageId)
+                                    REFERENCES CourtImages(ImageId) ON DELETE NO ACTION
+);
+GO
+/*******************************************************************************
+*******************************************************************************/
 --00/00/2025
 
+    
+/*******************************************************************************
+*******************************************************************************/
+--00/00/2025
 
 /*******************************************************************************
 *******************************************************************************/
 --00/00/2025
 
-
+    
 /*******************************************************************************
 *******************************************************************************/
 --00/00/2025

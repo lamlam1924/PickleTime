@@ -1,6 +1,6 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 
-const Carousel = ({slides}) => {
+const Carousel = ({slides, interval = 3000}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
 
@@ -11,7 +11,13 @@ const Carousel = ({slides}) => {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
-
+  
+  // Auto run
+  useEffect(() => {
+    const timer = setInterval(nextSlide, interval);
+    return () => clearInterval(timer); // cleanup khi unmount
+  }, [currentSlide]);
+  
   return (
     <div className="relative w-full h-[400px] overflow-hidden">
       {slides.map((slide, index) => (

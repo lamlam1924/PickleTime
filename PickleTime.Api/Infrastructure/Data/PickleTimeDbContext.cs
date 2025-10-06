@@ -38,6 +38,8 @@ public partial class PickleTimeDbContext : DbContext
 
     public virtual DbSet<Facility> Facilities { get; set; }
 
+    public virtual DbSet<FacilityImage> FacilityImages { get; set; }
+
     public virtual DbSet<FacilityOperatingHour> FacilityOperatingHours { get; set; }
 
     public virtual DbSet<FacilityStatus> FacilityStatuses { get; set; }
@@ -273,6 +275,7 @@ public partial class PickleTimeDbContext : DbContext
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(255)
                 .HasColumnName("ImageURL");
+            entity.Property(e => e.PublicId).HasMaxLength(255);
 
             entity.HasOne(d => d.Court).WithOne(p => p.CourtImage)
                 .HasForeignKey<CourtImage>(d => d.CourtId)
@@ -362,6 +365,23 @@ public partial class PickleTimeDbContext : DbContext
                 .HasForeignKey(d => d.StatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Facilitie__Statu__6D0D32F4");
+        });
+
+        modelBuilder.Entity<FacilityImage>(entity =>
+        {
+            entity.HasKey(e => e.ImageId).HasName("PK__Facility__7516F70C568D5AAB");
+
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.PublicId).HasMaxLength(250);
+
+            entity.HasOne(d => d.CourtImage).WithMany(p => p.FacilityImages)
+                .HasForeignKey(d => d.CourtImageId)
+                .HasConstraintName("FK_FacilityImages_CourtImages");
+
+            entity.HasOne(d => d.Facility).WithMany(p => p.FacilityImages)
+                .HasForeignKey(d => d.FacilityId)
+                .HasConstraintName("FK_FacilityImages_Facilities");
         });
 
         modelBuilder.Entity<FacilityOperatingHour>(entity =>

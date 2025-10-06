@@ -25,7 +25,9 @@ public class AuthService : IAuthService
         // TODO: hash + verify password bằng BCrypt
         if (user.PassWord != request.Password)
             throw new UnauthorizedAccessException("Invalid email or password");
-
+        
+        var roleName = user.Role?.RoleName ?? null;
+        
         // cập nhật LastLogin chẳng hạn
         user.LastLogin = DateTime.UtcNow;
         await _userRepository.UpdateAsync(user);
