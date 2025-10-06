@@ -12,7 +12,7 @@ const useTurfData = () => {
       try {
         dispatch(setLoading(true));
         // Fetch your turf data here
-        const response = await axiosInstance.get("/facilities/all");
+        const response = await axiosInstance.get("api/facilities/all");
         const data = await response.data;
         dispatch(setTurfs(data));
       } catch (err) {

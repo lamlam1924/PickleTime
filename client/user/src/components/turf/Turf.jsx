@@ -14,9 +14,6 @@ const Turf = () => {
         const filtered = turfs.filter(
             (turf) =>
                 turf.facilityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                turf.sportTypes.some((sport) =>
-                    sport.toLowerCase().includes(searchTerm.toLowerCase())
-                ) ||
                 turf.address.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredTurfs(filtered);
