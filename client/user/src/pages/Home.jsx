@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import Carousel from "../components/common/Carousel";
 import Footer from "../components/layout/Footer";
-import useTurfData from "../hooks/useTurfData";
-import TurfCard from "../components/turf/TurfCard";
-import TurfCardSkeleton from "../components/ui/TurfCardSkeleton";
+import useFacilityData from "../hooks/useFacilityData";
+import FacilityCard from "../components/turf/FacilityCard";
+import FacilityCardSkeleton from "../components/ui/FacilityCardSkeleton";
 import { useSelector } from "react-redux";
 import banner1 from "/banner-1.png"
 import banner2 from "/banner-2.jpeg"
@@ -11,7 +11,7 @@ import banner3 from "/banner-3.jpeg"
  
 const Home = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const { turfs, loading } = useTurfData();
+  const { turfs, loading } = useFacilityData();
   const slides = [ banner1, banner2, banner3];
 
 
@@ -41,11 +41,11 @@ const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading
             ? Array.from({ length: 3 }).map((_, index) => (
-                <TurfCardSkeleton key={`skeleton-${index}`} />
+                <FacilityCardSkeleton key={`skeleton-${index}`} />
               ))
             : turfs
                 .slice(0, 3)
-                .map((turf) => <TurfCard key={turf._id} turf={turf} />)}
+                .map((turf) => <FacilityCard key={turf.facilityId} turf={turf} />)}
         </div>
         <div className="text-center mt-8">
           <Link

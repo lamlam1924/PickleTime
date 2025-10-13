@@ -1,6 +1,6 @@
 import   { useState } from "react";
 
-const SearchTurf = ({ onSearch }) => {
+const SearchFacility = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (e) => {
@@ -24,4 +24,4 @@ const SearchTurf = ({ onSearch }) => {
   );
 };
 
-export default SearchTurf;
+export default SearchFacility;

@@ -3,8 +3,8 @@ import Root from "./layouts/Root";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
-import Turf from "./components/turf/Turf";
-import TurfDetails from "./components/turf/TurfDetails";
+import Facility from "./components/turf/Facility";
+import FacilityDetails from "./components/turf/FacilityDetails";
 import BecomeOwner from "./features/becomeOwner/BecomeOwner";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import Reservation from "./components/Reservation";
@@ -31,11 +31,11 @@ const router = createBrowserRouter([
       },
       {
         path: "turfs",
-        element: <Turf />,
+        element: <Facility />,
       },
       {
         path: "turf/:id",
-        element: <TurfDetails />,
+        element: <FacilityDetails />,
       },
     ],
   },
@@ -50,11 +50,11 @@ const router = createBrowserRouter([
       },
       {
         path: "turfs",
-        element: <Turf />,
+        element: <Facility />,
       },
       {
         path: "turf/:id",
-        element: <TurfDetails />,
+        element: <FacilityDetails />,
       },
 
       {

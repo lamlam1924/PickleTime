@@ -1,24 +1,23 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import useTurfData from "../../hooks/useTurfData";
+import useFacilityData from "../../hooks/useFacilityData";
 import useReviews from "../../hooks/useReviews";
 import Reviews from "../reviews/Reviews";
-import TurfDetailsSkeleton from "../ui/TurfDetailsSkeleton";
+import FacilityDetailsSkeleton from "../ui/FacilityDetailsSkeleton";
 import { MapPin, Clock, Activity, IndianRupee } from "lucide-react";
+import useFacilityById from "../../hooks/useFacilityById.jsx";
 
-const TurfDetails = () => {
+const FacilityDetails = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { loading, turfs } = useTurfData();
+  const { facility: turf, loading } = useFacilityById(id);
   const { averageRating } = useReviews(id);
+  const navigate = useNavigate();
 
   if (loading) {
-    return <TurfDetailsSkeleton />;
+    return <FacilityDetailsSkeleton />;
   }
-
-  const turf = turfs.find((t) => t._id === id);
 
   if (!turf) {
     return (
@@ -37,7 +36,7 @@ const TurfDetails = () => {
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
-          <span>Turf not found</span>
+          <span>Facility not found</span>
         </div>
       </div>
     );
@@ -57,15 +56,15 @@ const TurfDetails = () => {
         <div className="bg-base-100 shadow-xl rounded-lg overflow-hidden">
           <div className="relative h-96">
             <img
-              src={turf.image || "/banner-1.png"}
-              alt={turf.name}
+              src={turf.isMainImage || "/banner-1.png"}
+              alt={turf.facilityName}
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-              <h2 className="text-3xl font-bold text-white">{turf.name}</h2>
+              <h2 className="text-3xl font-bold text-white">{turf.facilityName}</h2>
               <div className="flex items-center space-x-2 text-white">
                 <MapPin className="w-4 h-4" />
-                <p className="text-sm">{turf.location}</p>
+                <p className="text-sm">${turf.address}, ${turf.ward}, ${turf.district}, ${turf.province}</p>
               </div>
             </div>
           </div>
@@ -98,12 +97,12 @@ const TurfDetails = () => {
             <InfoItem
               icon={<IndianRupee />}
               label="Price per Hour"
-              value={`₹ ${turf.pricePerHour}`}
+              value="50$"
             />
             <InfoItem
               icon={<Activity />}
               label="Sports"
-              value={turf.sportTypes.join(", ")}
+              value="Pickleball"
             />
             <InfoItem
               icon={<Clock />}
@@ -145,4 +144,4 @@ const InfoItem = ({ icon, label, value }) => (
   </div>
 );
 
-export default TurfDetails;
+export default FacilityDetails;

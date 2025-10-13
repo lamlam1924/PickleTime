@@ -25,11 +25,20 @@ public class FacilityProfile : Profile
                         .Where(img => !img.IsDeleted)
                         .OrderBy(img => img.DisplayOrder)
                         .Select(img => img.ImageUrl)
-                        .FirstOrDefault()
-                ));
+                        .FirstOrDefault() ));
 
+        CreateMap<Facility, FacilityDetailDto>()
+            .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName))
+            .ForMember(dest => dest.OperatingHours, opt => opt.MapFrom(src => src.FacilityOperatingHours));
 
+        CreateMap<FacilityImage, FacilityImageDto>();
+        CreateMap<CourtImage, CourtImageDto>();
+        CreateMap<FacilityOperatingHour, FacilityOperatingHourDto>();
 
+        CreateMap<Court, CourtDto>()
+            .ForMember(dest => dest.TypeName, opt => opt.MapFrom(src => src.Type.TypeName))
+            .ForMember(dest => dest.SurfaceName, opt => opt.MapFrom(src => src.Surface.SurfaceName))
+            .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName));
 
     }
 }

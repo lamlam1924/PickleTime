@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const TurfCard = ({ turf }) => {
+const FacilityCard = ({ turf }) => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   return (
       <div className="card bg-base-100 shadow-xl animate-bounce-fade-in">
@@ -37,4 +37,4 @@ const TurfCard = ({ turf }) => {
   );
 };
 
-export default TurfCard;
+export default FacilityCard;

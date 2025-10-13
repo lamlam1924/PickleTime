@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import axiosInstance from "./useAxiosInstance";
 import toast from "react-hot-toast";
 
-const useReviews = (turfId) => {
+const useReviews = (facilityId) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
 
   const fetchReviews = async () => {
     try {
-      const response = await axiosInstance.get(`/api/user/review/${turfId}`);
+      const response = await axiosInstance.get(`/api/reviews/${facilityId}`);
        const result = response.data;
        setReviews(result.reviews);
       setAverageRating(result.averageRating);
