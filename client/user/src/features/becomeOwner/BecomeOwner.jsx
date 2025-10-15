@@ -43,41 +43,30 @@ const BecomeOwner = () => {
 
         {/* content section */}
         <div className=" ">
-          <div className=" shadow-md border p-6 rounded-lg h-full">
-            <h2 className="text-2xl font-semibold mb-4">
-              Becoming a Turf Owner
-            </h2>
+          <div className="shadow-md border p-6 rounded-lg h-full">
+            <h2 className="text-2xl font-semibold mb-4">Trở thành Chủ Sân</h2>
             <p className="mb-4">
-              Join our platform as a turf owner and start managing your sports
-              facilities efficiently. Here&#39;s what you need to know:
+              Tham gia PickleTime với vai trò <strong>Chủ Sân Pickleball</strong> –
+              quản lý cơ sở thể thao của bạn dễ dàng và chuyên nghiệp.
             </p>
-            <ul className="list-disc pl-5 mb-4 space-y-2">
-              <li>Fill out the application form with your details.</li>
-              <li>Our admin team will review your application thoroughly.</li>
-              <li>
-                You&#39;ll receive an email with the decision on your
-                application.
-              </li>
-              <li>
-                If approved, the email will contain a link to create your owner
-                account.
-              </li>
-              <li>
-                Once your account is set up, you can start managing your turf
-                business.
-              </li>
+
+            <h3 className="text-lg font-semibold mb-2">Quy trình đăng ký</h3>
+            <ul className="list-disc pl-5 mb-4 space-y-1">
+              <li>Điền biểu mẫu đăng ký.</li>
+              <li>PickleTime xem xét và duyệt hồ sơ.</li>
+              <li>Nhận email kết quả và liên kết tạo tài khoản.</li>
+              <li>Bắt đầu quản lý sân của bạn ngay.</li>
             </ul>
-            <h3 className="text-xl font-semibold mb-2">
-              As a Turf Owner, you can:
-            </h3>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Add and manage multiple turfs</li>
-              <li>View and handle bookings</li>
-              <li>Manage payments and transactions</li>
-              <li>Set availability and pricing</li>
-              <li>Communicate with customers</li>
+
+            <h3 className="text-lg font-semibold mb-2">Quyền lợi của Chủ Sân</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Quản lý nhiều sân cùng lúc.</li>
+              <li>Theo dõi và xử lý đặt sân.</li>
+              <li>Điều chỉnh giá, thời gian, thanh toán.</li>
+              <li>Liên hệ trực tiếp với khách hàng.</li>
             </ul>
           </div>
+
         </div>
       </div>
     </div>

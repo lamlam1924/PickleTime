@@ -6,8 +6,9 @@ using PickleTime.Api.Application.Contracts.Auth;
 using PickleTime.Api.Application.Contracts.Facilities;
 using PickleTime.Api.Application.Contracts.Files;
 using PickleTime.Api.Application.Contracts.Images;
+using PickleTime.Api.Application.Contracts.Reviews;
 using PickleTime.Api.Application.Services;
-using PickleTime.Api.Application.Services.MappingProfiles;
+using PickleTime.Api.Application.Mapping;
 using PickleTime.Api.Common.Helpers;
 using PickleTime.Api.Infrastructure.Data;
 using PickleTime.Api.Infrastructure.Repositories;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICourtImageRepository, CourtImageRepository>();
 builder.Services.AddScoped<IFacilityRepository, FacilityRepository>();
 builder.Services.AddScoped<IFacilityImageRepository, FacilityImageRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 //Đăng ký Service
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -33,6 +35,7 @@ builder.Services.AddSingleton<JwtService>();
 builder.Services.AddScoped<ICourtImageService, CourtImageService>();
 builder.Services.AddScoped<IFacilityService, FacilityService>();
 builder.Services.AddScoped<IFacilityImageService, FacilityImageService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 // Đăng ký AutoMapper
 builder.Services.AddAutoMapper(typeof(FacilityProfile));

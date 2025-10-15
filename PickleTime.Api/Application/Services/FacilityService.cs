@@ -1,8 +1,6 @@
 using AutoMapper;
 using PickleTime.Api.Application.Contracts.Facilities;
 using PickleTime.Api.Application.Contracts.Facilities.Dtos;
-using PickleTime.Api.Common.Helpers;
-using PickleTime.Api.Domain.Entities;
 
 namespace PickleTime.Api.Application.Services;
 
@@ -32,5 +30,14 @@ public class FacilityService : IFacilityService
     {
         var facility = await _facilityRepository.GetByIdAsync(id);
         return facility == null ? null : _mapper.Map<FacilityDto>(facility);
+    }
+    public async Task<FacilityDetailDto?> GetFacilityByIdAsync(int id)
+    {
+        var facility = await _facilityRepository.GetByIdWithDetailsAsync(id);
+        if (facility == null)
+            return null;
+
+        var dto = _mapper.Map<FacilityDetailDto>(facility);
+        return dto;
     }
 }

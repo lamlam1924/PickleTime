@@ -1,5 +1,3 @@
-using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
 using PickleTime.Api.Application.Contracts.Files;
 using PickleTime.Api.Application.Contracts.Images;
 using PickleTime.Api.Application.Contracts.Images.Dtos;

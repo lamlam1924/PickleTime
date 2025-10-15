@@ -35,4 +35,14 @@ public class FacilitiesController : ControllerBase
 
         return Ok(facility);
     }
+    [HttpGet("detail/{id}")]
+    public async Task<ActionResult<FacilityDetailDto>> GetFacilityById(int id)
+    {
+        var facility = await _facilityService.GetFacilityByIdAsync(id);
+        if (facility == null)
+            return NotFound(new { message = "Facility not found" });
+
+        return Ok(facility);
+    }
+
 }

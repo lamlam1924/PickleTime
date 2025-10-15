@@ -742,9 +742,13 @@ CREATE TABLE FacilityImages (
 GO
 /*******************************************************************************
 *******************************************************************************/
---00/00/2025
+--13/10/2025
 
-    
+INSERT INTO Reviews ( FacilityId, CourtId, UserId, BookingId, Rating, Comment, Aspects, ReviewDate, ReviewStatusId, IsVerifiedBooking, IsDeleted)
+VALUES
+    (1, 1, 3, 1, 5, N'Sân rất sạch sẽ và dịch vụ tốt!', 'Cleanliness, Service', '2025-10-13 10:00:00', 1, 1, 0),
+    (2, 3, 4, 3, 4, N'Sân đẹp nhưng hơi đông vào cuối tuần.', 'Facility Quality, Crowdedness', '2025-10-14 11:30:00', 1, 1, 0)
+GO
 /*******************************************************************************
 *******************************************************************************/
 --00/00/2025
