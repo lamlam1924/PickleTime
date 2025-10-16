@@ -49,17 +49,21 @@ const useOwnerRequests = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get(
-        "/api/admin/owner-requests/list"
-      );
-      const data = await response.data;
-      setRequests(data.ownerRequests);
-      setAllRequests(data.ownerRequests);
-      setRejectedRequests(data.ownerRejectedRequests);
-      setAllRejectedRequests(data.ownerRejectedRequests);
+      const response = await axiosInstance.get("/api/admin/OwnerRequests/list");
+      const data = await response.data; // mảng request từ backend
+
+      // Lọc theo trạng thái
+      const pendingRequests = data.filter(r => r.statusName.toLowerCase() === "pending");
+      const rejected = data.filter(r => r.statusName.toLowerCase() === "rejected");
+      
+      setRequests(pendingRequests);
+      setAllRequests(pendingRequests);
+      setRejectedRequests(rejected);
+      setAllRejectedRequests(rejected);
+
     } catch (err) {
-      console.log(err, "err");
-      toast.error(err.response.data.message);
+      console.error("[ERROR] Failed to fetch owner requests:", err);
+      toast.error(err.response.data.message|| "Failed to fetch requests");
     } finally {
       setLoading(false);
     }
@@ -68,13 +72,12 @@ const useOwnerRequests = () => {
   const handleAccept = async (id) => {
     setRequestId(id);
     try {
-      // Replace with your actual API endpoint
       const response = await axiosInstance.put(
-        `/api/admin/owner-requests/${id}/accept`
+        `/api/admin/OwnerRequests/${id}/accept`
       );
       const result = await response.data;
        toast.success(result.message);
-      setRequests(requests.filter((request) => request._id !== id));
+      setRequests(requests.filter((request) => request.requestId !== id));
     } catch (err) {
       console.error(err);
       toast.error(err.response.data.message);
@@ -87,11 +90,11 @@ const useOwnerRequests = () => {
     setRequestId(id);
     try {
       const response = await axiosInstance.delete(
-        `/api/admin/owner-requests/${id}`
+        `/api/admin/OwnerRequests/${id}`
       );
       const result = await response.data;
       toast.success(result.message);
-      setRequests(requests.filter((request) => request._id !== id));
+      setRequests(requests.filter((request) => request.requestId !== id));
     } catch (err) {
       console.error(err, "delete error");
       toast.error(err.response?.data?.message);
@@ -104,12 +107,12 @@ const useOwnerRequests = () => {
     setRequestId(id);
     try {
       const response = await axiosInstance.put(
-        `/api/admin/owner-requests/reconsider/${id}`
+        `/api/admin/OwnerRequests/reconsider/${id}`
       );
       const result = await response.data;
       toast.success(result.message);
       setRejectedRequests(
-        rejectedRequests.filter((request) => request._id !== id)
+        rejectedRequests.filter((request) => request.requestId !== id)
       );
     } catch (error) {
       console.log(error);

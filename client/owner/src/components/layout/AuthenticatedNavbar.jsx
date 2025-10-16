@@ -25,7 +25,7 @@ const AuthenticatedNavbar = ({ toggleSidebar }) => {
             alt="TurfSpot"
             className="h-10 w-10 mask mask-squircle"
           />
-          TurfSpot
+          PickleTime
         </Link>
       </div>
       <div className="navbar-end">

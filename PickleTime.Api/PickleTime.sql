@@ -751,7 +751,38 @@ VALUES
 GO
 /*******************************************************************************
 *******************************************************************************/
---00/00/2025
+--15/10/2025
+
+CREATE TABLE RequestStatuses (
+                                 StatusId INT PRIMARY KEY,
+                                 StatusName NVARCHAR(50) NOT NULL
+);
+
+INSERT INTO RequestStatuses (StatusId, StatusName)
+VALUES (1, 'Pending'), (2, 'Approved'), (3, 'Rejected');
+
+
+GO
+
+CREATE TABLE OwnerRequests (
+                               RequestId INT PRIMARY KEY IDENTITY(1,1),
+                               FullName NVARCHAR(100) NOT NULL,
+                               Email NVARCHAR(100) NOT NULL,
+                               Phone NVARCHAR(20) NOT NULL,
+
+                               StatusId INT NOT NULL DEFAULT 1,                  -- FK → RequestStatuses (1: Pending, 2: Approved, 3: Rejected)
+                               SubmittedAt DATETIME NOT NULL DEFAULT GETDATE(),
+                               ReviewedAt DATETIME NULL,
+                               ReviewedBy INT NULL,                              -- FK → Users(UserId) (admin)
+                               AdminNote NVARCHAR(500) NULL,                     -- Lý do duyệt/từ chối
+                               CreatedUserId INT NULL,                           -- Nếu người gửi đã login
+
+                               FOREIGN KEY (ReviewedBy) REFERENCES Users(UserId),
+                               FOREIGN KEY (CreatedUserId) REFERENCES Users(UserId),
+                               FOREIGN KEY (StatusId) REFERENCES RequestStatuses(StatusId)
+);
+GO
+
 
 /*******************************************************************************
 *******************************************************************************/

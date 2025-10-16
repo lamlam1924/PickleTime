@@ -39,6 +39,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 
 // Đăng ký AutoMapper
 builder.Services.AddAutoMapper(typeof(FacilityProfile));
+builder.Services.AddAutoMapper(typeof(OwnerProfile));
 
 // Đăng ký Cloudinary
 builder.Services.Configure<CloudinarySettings>(

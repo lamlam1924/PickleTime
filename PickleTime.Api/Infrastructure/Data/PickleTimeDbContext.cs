@@ -44,6 +44,8 @@ public partial class PickleTimeDbContext : DbContext
 
     public virtual DbSet<FacilityStatus> FacilityStatuses { get; set; }
 
+    public virtual DbSet<OwnerRequest> OwnerRequests { get; set; }
+
     public virtual DbSet<Payment> Payments { get; set; }
 
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
@@ -55,6 +57,8 @@ public partial class PickleTimeDbContext : DbContext
     public virtual DbSet<Promotion> Promotions { get; set; }
 
     public virtual DbSet<PromotionStatus> PromotionStatuses { get; set; }
+
+    public virtual DbSet<RequestStatus> RequestStatuses { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
 
@@ -405,6 +409,34 @@ public partial class PickleTimeDbContext : DbContext
             entity.Property(e => e.StatusName).HasMaxLength(20);
         });
 
+        modelBuilder.Entity<OwnerRequest>(entity =>
+        {
+            entity.HasKey(e => e.RequestId).HasName("PK__OwnerReq__33A8517A6F4B6E60");
+
+            entity.Property(e => e.AdminNote).HasMaxLength(500);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.ReviewedAt).HasColumnType("datetime");
+            entity.Property(e => e.StatusId).HasDefaultValue(1);
+            entity.Property(e => e.SubmittedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.CreatedUser).WithMany(p => p.OwnerRequestCreatedUsers)
+                .HasForeignKey(d => d.CreatedUserId)
+                .HasConstraintName("FK__OwnerRequ__Creat__078C1F06");
+
+            entity.HasOne(d => d.ReviewedByNavigation).WithMany(p => p.OwnerRequestReviewedByNavigations)
+                .HasForeignKey(d => d.ReviewedBy)
+                .HasConstraintName("FK__OwnerRequ__Revie__0697FACD");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.OwnerRequests)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__OwnerRequ__Statu__0880433F");
+        });
+
         modelBuilder.Entity<Payment>(entity =>
         {
             entity.HasKey(e => e.PaymentId).HasName("PK__Payments__9B556A5891D25A6D");
@@ -529,6 +561,14 @@ public partial class PickleTimeDbContext : DbContext
 
             entity.Property(e => e.PromotionStatusId).HasColumnName("PromotionStatusID");
             entity.Property(e => e.StatusName).HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<RequestStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__RequestS__C8EE2063A83C2F17");
+
+            entity.Property(e => e.StatusId).ValueGeneratedNever();
+            entity.Property(e => e.StatusName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Review>(entity =>

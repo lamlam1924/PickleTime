@@ -27,30 +27,30 @@ const GuestNavbar = () => {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">Trang chủ</Link>
             </li>
           </ul>
         </div>
         <Link to="/" className="btn btn-ghost normal-case text-xl">
           <img
             src="/logo.png"
-            alt="TurfSpot"
+            alt="PickleTime"
             className="h-10 w-10 mask mask-squircle"
           />
-          TurfSpot
+          PickleTime
         </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/">Trang chủ</Link>
           </li>
         </ul>
       </div>
       <div className="navbar-end">
         <ThemeSwitcher />
         <Link to="/signup" className="btn btn-primary btn-outline">
-          Sign up
+          Đăng kí
         </Link>
       </div>
     </div>

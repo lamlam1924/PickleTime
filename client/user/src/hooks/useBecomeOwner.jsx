@@ -37,7 +37,7 @@ const useBecomeOwner = () => {
          setLoading(true);
          try {
             const response = await axiosInstance.post(
-              "/api/owner/auth/ownerRequest", data
+              "/api/ownerRequest", data
             );
             const result = await response.data;
              toast.success(result.message);

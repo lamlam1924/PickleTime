@@ -17,14 +17,13 @@ const Home = () => {
             <Carousel slides={slides} />
           </div>
           <div className="w-full lg:w-1/2">
-            <h1 className="text-5xl font-bold">Welcome to TurfSpot</h1>
+            <h1 className="text-5xl font-bold">Chào mừng đến với PickleTime</h1>
             <p className="py-6">
-              Discover and book the best turf fields in your area. Whether
-              you&#39;re planning a casual game or a tournament, TurfSpot has
-              got you covered.
+              PickleTime – nền tảng đặt sân Pickleball online nhanh gọn, tiện lợi.
+              Chỉ vài cú click, bạn đã có ngay sân chơi lý tưởng để thoả sức đam mê cùng bạn bè.
             </p>
             <Link to="/login" className="btn btn-accent">
-              Login
+              Đăng nhập
             </Link>
           </div>
         </div>

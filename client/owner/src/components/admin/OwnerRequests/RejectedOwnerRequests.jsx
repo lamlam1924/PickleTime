@@ -37,10 +37,10 @@ const RejectedOwnerRequests = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {rejectedRequests.map((request) => (
             <OwnerRequestCard
-              key={request._id}
+              key={request.requestId}
               request={request}
               onReconsider={handleReconsider}
-              isProcessing={requestId === request._id}
+              isProcessing={requestId === request.requestId}
               isRejected={true}
             />
           ))}

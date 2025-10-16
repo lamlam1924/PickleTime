@@ -53,6 +53,10 @@ public partial class User
 
     public virtual ICollection<Facility> Facilities { get; set; } = new List<Facility>();
 
+    public virtual ICollection<OwnerRequest> OwnerRequestCreatedUsers { get; set; } = new List<OwnerRequest>();
+
+    public virtual ICollection<OwnerRequest> OwnerRequestReviewedByNavigations { get; set; } = new List<OwnerRequest>();
+
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual Role Role { get; set; } = null!;
