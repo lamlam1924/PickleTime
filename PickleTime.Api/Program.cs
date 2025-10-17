@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Application.Contracts.Profile;
+using PickleTime.Api.Application.Contracts.OwnerProfile;
+using PickleTime.Api.Application.Contracts.Admin;
 using PickleTime.Api.Application.Services;
 using PickleTime.Api.Common.Helpers;
 using PickleTime.Api.Infrastructure.Data;
@@ -17,19 +20,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PickleTimeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Đăng ký Service và Jwt helper
+// Đăng ký Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IOwnerProfileService, OwnerProfileService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+// Đăng ký Helpers
 builder.Services.AddSingleton<JwtService>();
+
+// Đăng ký Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+// Add more repositories as needed
 
 // Đăng ký CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // React dev server
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174") // React dev servers
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 

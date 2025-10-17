@@ -36,28 +36,58 @@ const useLoginForm = () => {
   });
 
   const onSubmit = async (data) => {
-   setLoading(true);
+    setLoading(true);
     try {
-      const response = await axiosInstance.post("api/owner/auth/login", data);
+      const response = await axiosInstance.post("/auth/login", data);
       const result = await response.data;
-      dispatch(login({token:result.token,role:result.role}));
-      if(result.role === "owner") {
-        navigate("/owner");
-      }else if(result.role === "admin") {
-        navigate("/admin");
-      }
-       axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
-      toast.success(result.message);      
-    } catch (error) {
-      console.error(error, "error");
-      if(error.response) {
-        toast.error(error.response?.data?.message);
-      } else if(error.request) {
-        toast.error("No response from server. Please try again later.");
+      
+      console.log("Normal Login Response:", result);
+      console.log("UserId:", result.userId);
+      console.log("Role:", result.role);
+      console.log("Token:", result.token);
+      
+      // Get user role and redirect appropriately
+      const userRole = result.role?.toLowerCase();
+      
+      // Prepare user object for Redux
+      const userInfo = {
+        userId: result.userId,
+        userName: result.userName,
+        email: result.email,
+        fullName: result.fullName,
+        role: result.role
+      };
+      
+      toast.success(result.message);
+      dispatch(login({ 
+        userId: result.userId, 
+        token: result.token, 
+        role: result.role,
+        user: userInfo 
+      }));
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+      
+      console.log("Redirecting to role:", userRole);
+      
+      // Redirect based on role
+      if (userRole === 'admin') {
+        navigate("/admin", { replace: true });
+      } else if (userRole === 'manager') {
+        navigate("/owner", { replace: true });
+      } else if (userRole === 'customer') {
+        navigate("/customer", { replace: true });
       } else {
-        toast.error(error.message);
+        // Default fallback
+        navigate("/", { replace: true });
       }
-    }finally{
+    } catch (error) {
+      console.log(error, 'error');
+      if (error.response) {
+        toast.error(error.response?.data?.message || "Login failed");
+      } else {
+        toast.error("Network error. Please check your connection.");
+      }
+    } finally {
       setLoading(false);
     }
   };
