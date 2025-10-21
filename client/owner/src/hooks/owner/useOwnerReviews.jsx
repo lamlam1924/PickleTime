@@ -14,11 +14,16 @@ const useOwnerReviews = () => {
   const fetchTurfs = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/owner/reviews/turfs-with-reviews");
-      setTurfs(response.data);
+      const response = await axiosInstance.get("/owner/profile/turfs-with-reviews");
+      const result = response.data.data || response.data;
+      setTurfs(result || []);
+      if (result && result.length > 0) {
+        setSelectedTurf(result[0].id);
+      }
       setLoading(false);
     } catch (err) {
       setError("Failed to fetch turfs and reviews");
+      setTurfs([]);
       setLoading(false);
     }
   };

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "../useAxiosInstance";
+import toast from "react-hot-toast";
 
 const useUsers = () => {
   const [users, setUsers] = useState([]);
@@ -8,17 +9,29 @@ const useUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
-      // Replace this with your actual API call
-      const response = await axiosInstance.get("/api/admin/users/all");
-      const result = await response.data;
-      setUsers(result.users);
-      setFilteredUsers(result.users);
-      setLoading(false);
+      const response = await axiosInstance.get("/admin/users");
+      const result = response.data.data || response.data;
+      const usersList = result.users || result;
+      
+      // Filter out Managers (RoleId = 2 / roleName = 'manager')
+      // Only show Customers and Admins in User Management
+      const nonManagerUsers = usersList.filter(
+        user => user.roleName?.toLowerCase() !== 'manager'
+      );
+      
+      console.log("Fetched users (excluding managers):", nonManagerUsers);
+      setUsers(nonManagerUsers);
+      setFilteredUsers(nonManagerUsers);
     } catch (err) {
+      console.error("Error fetching users:", err);
+      toast.error(err.response?.data?.message || "Failed to fetch users");
+    } finally {
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -28,15 +41,23 @@ const useUsers = () => {
       setSearchTerm(term);
       const filtered = users.filter(
         (user) =>
-          user.name.toLowerCase().includes(term.toLowerCase()) ||
-          user.email.toLowerCase().includes(term.toLowerCase())
+          user.fullName?.toLowerCase().includes(term.toLowerCase()) ||
+          user.userName?.toLowerCase().includes(term.toLowerCase()) ||
+          user.email?.toLowerCase().includes(term.toLowerCase()) ||
+          user.phone?.includes(term) // Search by phone number (exact or partial match)
       );
       setFilteredUsers(filtered);
     },
     [users]
   );
 
-  return { users: filteredUsers, loading, searchTerm, handleSearch };
+  return { 
+    users: filteredUsers, 
+    loading, 
+    searchTerm, 
+    handleSearch, 
+    refreshUsers: fetchUsers 
+  };
 };
 
 export default useUsers;

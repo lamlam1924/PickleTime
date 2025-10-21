@@ -1,11 +1,36 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  // baseURL: "http://localhost:1234",
-  baseURL: "https://turf-spot-be.vercel.app",
+  baseURL: "http://localhost:5104/api",
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use((config) => {
+  // Skip token for public endpoints
+  const publicEndpoints = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/google-login',
+    '/auth/request-password-reset',
+    '/auth/reset-password'
+  ];
+  
+  const isPublicEndpoint = publicEndpoints.some(endpoint => 
+    config.url?.includes(endpoint)
+  );
+
+  if (isPublicEndpoint) {
+    console.log("Public endpoint:", config.url, "- skipping token");
+    return config;
+  }
+
+  // First check if token already set in headers (e.g., from login)
+  if (config.headers.Authorization) {
+    console.log("Request to:", config.url, "with token: Present (from headers)");
+    return config;
+  }
+
+  // Otherwise try to get from localStorage
   let token = null;
   try {
     const persistedUser = localStorage.getItem("persist:root");
@@ -22,7 +47,10 @@ axiosInstance.interceptors.request.use((config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-  }  
+    console.log("Request to:", config.url, "with token: Present");
+  } else {
+    console.warn("No token found for request:", config.url);
+  }
 
   return config;
 });

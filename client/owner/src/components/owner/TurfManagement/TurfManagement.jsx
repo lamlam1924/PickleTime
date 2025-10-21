@@ -26,12 +26,31 @@ const TurfManagement = () => {
   };
 
   if (error) {
-    return <div className="text-error text-center mt-8">{error}</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="alert alert-error shadow-lg">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Turf Management</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Quản lý cơ sở</h1>
+        <div className="stats shadow">
+          <div className="stat">
+            <div className="stat-title">Tổng cơ sở</div>
+            <div className="stat-value text-primary">{turfs.length}</div>
+          </div>
+        </div>
+      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -59,8 +78,19 @@ const TurfManagement = () => {
           ))}
         </div>
       ) : (
-        <div className="text-center text-gray-500 mt-8">
-          No turfs available.
+        <div className="hero min-h-[400px] bg-base-200 rounded-lg">
+          <div className="hero-content text-center">
+            <div className="max-w-md">
+              <h2 className="text-2xl font-bold mb-4">Chưa có cơ sở nào</h2>
+              <p className="mb-6">Bạn chưa có cơ sở Pickleball nào. Hãy thêm cơ sở đầu tiên của bạn!</p>
+              <button className="btn btn-primary" onClick={() => {}}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Thêm cơ sở mới
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

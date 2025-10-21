@@ -2,6 +2,7 @@ import useLoginForm from "@hooks/useLoginForm";
 import { Link } from "react-router-dom";
 
 import { Button, FormField } from "@components/common";
+import GoogleLoginButton from "@components/common/GoogleLoginButton";
 
 const Login = () => {
   const { register, handleSubmit, errors, onSubmit, loading } = useLoginForm();
@@ -26,12 +27,22 @@ const Login = () => {
               register={register}
               error={errors.password}
             />
+            <div className="text-right mt-2">
+              <Link to="/forgot-password" className="link link-hover text-sm">
+                Forgot password?
+              </Link>
+            </div>
             <div className="form-control mt-6">
               <Button type="submit" className="btn-primary" loading={loading}>
-                Sign Up
+                Login
               </Button>
             </div>
           </form>
+          
+          <div className="divider">OR</div>
+          
+          <GoogleLoginButton />
+          
           <div className="text-center mt-4">
             <Link to="/signup" className="link link-hover">
               Don&#39;t have an account? Register

@@ -10,6 +10,7 @@ export {default as AdminDashboard} from "./Dashboard/AdminDashboard"
 
 // Owner Management
 export {default as OwnerViewer} from "./OwnerManagement/OwnerViewer"
+export {default as OwnerPage} from "./OwnerManagement/OwnerPage"
 
 // Turf
 export {default as TurfList} from "./Turf/TurfList"

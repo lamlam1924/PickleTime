@@ -8,8 +8,9 @@ const useDashboardData = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axiosInstance.get("/api/admin/dashboard");
-      setData(response.data);
+      const response = await axiosInstance.get("/admin/dashboard");
+      const result = response.data.data || response.data;
+      setData(result);
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
       setError(err);

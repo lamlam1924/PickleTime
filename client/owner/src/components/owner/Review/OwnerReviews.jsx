@@ -7,6 +7,9 @@ const OwnerReviews = () => {
 
   if (loading) return <ReviewsSkeleton />;
   if (error) return <div className="text-error p-4">{error}</div>;
+  if (!turfs || turfs.length === 0) {
+    return <div className="p-4">No turfs with reviews found.</div>;
+  }
 
   return (
     <div className="p-4">

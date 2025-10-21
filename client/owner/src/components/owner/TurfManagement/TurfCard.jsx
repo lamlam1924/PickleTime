@@ -28,7 +28,7 @@ const TurfCard = ({ turf, onEdit }) => {
         </div>
         <div className="flex items-center mt-2 text-sm">
           <Tag size={14} className="mr-2" />
-          <span>₹{turf.pricePerHour}/hour</span>
+          <span>{turf.pricePerHour}đ/hour</span>
         </div>
         <div className="flex items-center mt-2 text-sm">
           <Clock size={14} className="mr-2" />

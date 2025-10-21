@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useState } from "react";
 import axiosInstance from "./useAxiosInstance";
+import { useState } from "react";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import {login} from "../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { login } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { persistor } from "../redux/store";
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -23,10 +24,9 @@ const loginSchema = yup.object().shape({
 });
 
 const useLoginForm = () => {
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
- 
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -39,51 +39,62 @@ const useLoginForm = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.post("/auth/login", data);
-      const result = await response.data;
+      const result = response.data;
       
-      console.log("Normal Login Response:", result);
-      console.log("UserId:", result.userId);
-      console.log("Role:", result.role);
-      console.log("Token:", result.token);
+      console.log("Login Response:", result);
       
-      // Get user role and redirect appropriately
+      if (!result.token) {
+        throw new Error("No token received from server");
+      }
+      
+      toast.success(result.message || "Login successful");
+      
+      // Use data directly from backend response (already has user info)
       const userRole = result.role?.toLowerCase();
+      const userId = result.userId;
       
-      // Prepare user object for Redux
-      const userInfo = {
-        userId: result.userId,
+      console.log("User Role:", userRole);
+      console.log("User ID:", userId);
+      console.log("User Info:", {
         userName: result.userName,
         email: result.email,
-        fullName: result.fullName,
-        role: result.role
-      };
+        fullName: result.fullName
+      });
       
-      toast.success(result.message);
+      // Store token and user info in Redux
       dispatch(login({ 
-        userId: result.userId, 
-        token: result.token, 
-        role: result.role,
-        user: userInfo 
+        token: result.token,
+        role: userRole,
+        userId: userId,
+        user: {
+          userName: result.userName,
+          email: result.email,
+          fullName: result.fullName
+        }
       }));
+      
+      // Set token in axios headers immediately
       axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
       
-      console.log("Redirecting to role:", userRole);
+      // Wait for Redux persist to flush to localStorage
+      await persistor.flush();
       
       // Redirect based on role
       if (userRole === 'admin') {
         navigate("/admin", { replace: true });
-      } else if (userRole === 'manager') {
+      } else if (userRole === 'manager' || userRole === 'owner') {
         navigate("/owner", { replace: true });
-      } else if (userRole === 'customer') {
+      } else if (userRole === 'customer' || userRole === 'user') {
         navigate("/customer", { replace: true });
       } else {
-        // Default fallback
         navigate("/", { replace: true });
       }
     } catch (error) {
-      console.log(error, 'error');
+      console.error('Login error:', error);
       if (error.response) {
         toast.error(error.response?.data?.message || "Login failed");
+      } else if (error.message) {
+        toast.error(error.message);
       } else {
         toast.error("Network error. Please check your connection.");
       }

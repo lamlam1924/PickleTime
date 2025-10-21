@@ -15,8 +15,8 @@ const useOwnerBookings = () => {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/owner/bookings");
-      const result = response.data;
+      const response = await axiosInstance.get("/owner/profile/bookings");
+      const result = response.data.data || response.data;
       setAllBookings(result);
       setLoading(false);
     } catch (err) {

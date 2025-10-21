@@ -1,90 +1,85 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using PickleTime.Api.Infrastructure.Data;
 using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Application.Contracts.Admin;
 using PickleTime.Api.Application.Contracts.Profile;
 using PickleTime.Api.Application.Contracts.OwnerProfile;
-using PickleTime.Api.Application.Contracts.Admin;
 using PickleTime.Api.Application.Services;
-using PickleTime.Api.Common.Helpers;
-using PickleTime.Api.Infrastructure.Data;
 using PickleTime.Api.Infrastructure.Repositories.Bookings;
+using PickleTime.Api.Common.Helpers;
+using System.IdentityModel.Tokens.Jwt;
+
+// Clear default claim type mapping
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =============================================================
-// 1. Add services to DI container
+// Services
 // =============================================================
-// Đăng ký DbContext (EF Core, Database First)
 builder.Services.AddDbContext<PickleTimeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Đăng ký Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IOwnerProfileService, OwnerProfileService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-
-// Đăng ký Helpers
 builder.Services.AddSingleton<JwtService>();
 
-// Đăng ký Repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-// Add more repositories as needed
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Convert PascalCase to camelCase for JSON responses
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
+    
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Đăng ký CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174") // React dev servers
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
-// Add Authentication với JWT
+// =============================================================
+// Authentication
+// =============================================================
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    var key = builder.Configuration["Jwt:Key"] ?? "";
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        // Quy định cách validate token
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true, // Có validate Issuer không
-            ValidateAudience = true, // Có validate Audience không
-            ValidateLifetime = true, // Có kiểm tra hết hạn không
-            ValidateIssuerSigningKey = true, // Có check chữ ký không
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role,
+        NameClaimType = System.Security.Claims.ClaimTypes.Name
+    };
+});
 
-            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Issuer hợp lệ
-            ValidAudience = builder.Configuration["Jwt:Audience"], // Audience hợp lệ
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Key để verify token
-        };
-    });
-
-// Add Authorization (sẽ dùng [Authorize] ở Controller)
 builder.Services.AddAuthorization();
 
-// Add Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Add Controllers (nếu bạn có controller class)
-builder.Services.AddControllers();
-
-// =============================================================
-// 2. Configure Middleware pipeline
-// =============================================================
 var app = builder.Build();
 
-// Quan trọng: bật Auth middleware
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Configure the HTTP request pipeline.
+// =============================================================
+// Middleware order — cực kỳ quan trọng!
+// =============================================================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -93,10 +88,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ⚠️ Quan trọng: CORS phải trước Authentication
+app.UseRouting();
+
 app.UseCors("AllowFrontend");
 
-app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers(); // ✅ dùng MapControllers thay vì UseEndpoints
 
 app.Run();
-

@@ -167,7 +167,7 @@ CREATE TABLE Users (
                        LastLogin DATETIME NULL,
                        Avatar NVARCHAR(255),
                        IsDeleted BIT NOT NULL DEFAULT 0,
-                       Reset_Token NVARCHAR(10) NULL,
+                       Reset_Token NVARCHAR(100) NULL,
                        Reset_Token_Expiry DATETIME NULL,
                        Google_Id NVARCHAR(100) NULL,
                        FOREIGN KEY (RoleID) REFERENCES Roles(RoleID),

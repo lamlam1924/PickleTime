@@ -10,9 +10,9 @@ const useTransactionData = () => {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get("/api/admin/transactions");
-        const result = response.data;
-         setTransactions(result.transactions);
+        const response = await axiosInstance.get("/admin/transactions");
+        const result = response.data.data || response.data;
+        setTransactions(result.transactions || result);
         setLoading(false);
       } catch (err) {
         setError(err.message);

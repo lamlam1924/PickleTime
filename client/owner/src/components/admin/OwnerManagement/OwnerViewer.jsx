@@ -9,11 +9,14 @@ const OwnerViewer = () => {
  
   if (loading) return <OwnersSkeleton />;
 
+  // owners is an object with {all, filtered}, we need the filtered array
+  const ownersList = owners.filtered || [];
+
   return (
     <div className="container mx-auto p-4 ">
       <h1 className="text-2xl font-bold mb-4">Owner Viewer</h1>
       <SearchBar searchTerm={searchTerm} handleSearch={handleSearch} />
-      <OwnerList owners={owners} />
+      <OwnerList owners={ownersList} />
     </div>
   );
 };

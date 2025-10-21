@@ -52,17 +52,55 @@ const useSignUpForm = () => {
   const onSubmit = async (data) => {
      setLoading(true);
     try {
-      const response = await axiosInstance.post(
-        "/api/owner/auth/register",
-        data
-      );
-      const result = await response.data;
-        dispatch(login({ token: result.token, role: result.role }));
-        if (result.role === "owner") {
-          navigate("/owner");
-        } else if (result.role === "admin") {
-          navigate("/admin");
-        }
+      const response = await axiosInstance.post("/auth/register", {
+        email: data.email,
+        password: data.password,
+        userName: data.name,
+        fullName: data.name,
+        phone: data.phone
+      });
+      
+      const result = response.data;
+      console.log("Register Response:", result);
+      
+      if (!result.token) {
+        throw new Error("No token received from server");
+      }
+
+      toast.success(result.message || "Registration successful");
+      
+      // Construct user object from response
+      const user = {
+        userId: result.userId,
+        email: result.email,
+        userName: result.userName,
+        fullName: result.fullName
+      };
+      
+      // Normalize role
+      const normalizedRole = result.role.toLowerCase();
+      
+      // Dispatch full login payload to Redux
+      dispatch(login({ 
+        token: result.token,
+        role: normalizedRole,
+        userId: result.userId,
+        user: user
+      }));
+      
+      // Set token in axios headers
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
+      
+      // Redirect based on role
+      if (normalizedRole === "admin") {
+        navigate("/admin");
+      } else if (normalizedRole === "manager" || normalizedRole === "owner") {
+        navigate("/owner");
+      } else if (normalizedRole === "customer" || normalizedRole === "user") {
+        navigate("/");
+      } else {
+        navigate("/");
+      }
         
     } catch (error){
        if (error.response) {

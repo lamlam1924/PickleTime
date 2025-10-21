@@ -1,3 +1,4 @@
+import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 // import {ProtectedRoute} from "@components/ProtectedRoute"
@@ -5,9 +6,13 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "@pages/Home.jsx";
 import Login from "@pages/Login";
 import SignUp from "@pages/SignUp";
+import ForgotPassword from "@pages/ForgotPassword";
+import ResetPassword from "@pages/ResetPassword";
+import GoogleCallback from "@pages/GoogleCallback";
 
 //  all the components that are used in the layout
 import { AdminLayout, OwnerLayout, GuestLayout } from "@layouts";
+import CustomerLayout from "@layouts/CustomerLayout";
 
 //  all the components that are used in the owner dashboard
 import {
@@ -24,7 +29,7 @@ import {
   NewOwnerRequests,
   RejectedOwnerRequests,
   AdminDashboard,
-  OwnerViewer,
+  OwnerPage,
   TurfList,
   AllTurf,
   TransactionSection,
@@ -53,6 +58,18 @@ const router = createBrowserRouter([
         path: "signup",
         element: <SignUp />,
       },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
+      },
+      {
+        path: "auth/google-success",
+        element: <GoogleCallback />,
+      },
     ],
   },
   {
@@ -75,13 +92,21 @@ const router = createBrowserRouter([
       {
         path: "owners",
         children: [
-          { path: "", element: <OwnerViewer /> },
+          { path: "", element: <OwnerPage /> },
           { path: ":ownerId/turf", element: <TurfList /> },
         ],
       },
 
       { path: "turfs", element: <AllTurf /> },
       { path: "transactions", element: <TransactionSection /> },
+      { 
+        path: "profile", 
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            {React.createElement(React.lazy(() => import("@pages/admin/AdminOwnerProfilePage")))}
+          </React.Suspense>
+        )
+      },
     ],
   },
   {
@@ -97,6 +122,36 @@ const router = createBrowserRouter([
       { path: "turfs", element: <TurfManagement /> },
       { path: "reviews", element: <OwnerReviews /> },
       { path: "bookings", element: <OwnerBookings /> },
+      { 
+        path: "profile", 
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            {React.createElement(React.lazy(() => import("@pages/admin/AdminOwnerProfilePage")))}
+          </React.Suspense>
+        )
+      },
+    ],
+  },
+  {
+    path: "/customer",
+    element: (
+      <ProtectedRoute requiredRole="customer">
+        <CustomerLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { 
+        index: true, 
+        element: <div className="p-8"><h1 className="text-2xl font-bold">Customer Dashboard</h1><p>Welcome to customer portal</p></div>
+      },
+      { 
+        path: "profile", 
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            {React.createElement(React.lazy(() => import("@pages/customer/ProfilePage")))}
+          </React.Suspense>
+        )
+      },
     ],
   },
 ]);

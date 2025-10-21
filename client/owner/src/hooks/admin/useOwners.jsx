@@ -23,8 +23,10 @@ const useOwners = () => {
     } else {
       const filtered = owners.all.filter(
         (owner) =>
-          owner.name.toLowerCase().includes(value.toLowerCase()) ||
-          owner.email.toLowerCase().includes(value.toLowerCase())
+          owner.fullName?.toLowerCase().includes(value.toLowerCase()) ||
+          owner.userName?.toLowerCase().includes(value.toLowerCase()) ||
+          owner.email?.toLowerCase().includes(value.toLowerCase()) ||
+          owner.phone?.includes(value) // Search by phone number (exact or partial match)
       );
       setOwners((prev) => ({
         ...prev,
@@ -34,16 +36,19 @@ const useOwners = () => {
   };
 
   const fetchOwners = async () => {
+    setLoading(true);
     try {
-      const response = await axiosInstance.get("/api/admin/owners/list");
-      const result = response.data.owners;
+      const response = await axiosInstance.get("/admin/owners/list");
+      const result = response.data.data || response.data;
+      const ownersList = result.owners || result;
+      console.log("Fetched owners:", ownersList);
       setOwners({
-        all: result,
-        filtered: result,
+        all: ownersList,
+        filtered: ownersList,
       });
-      setLoading(false);
     } catch (err) {
       console.error("Error fetching owners:", err);
+    } finally {
       setLoading(false);
     }
   };
@@ -52,7 +57,16 @@ const useOwners = () => {
     fetchOwners();
   }, []);
 
-  return { owners: owners.filtered, loading, searchTerm, handleSearch };
+  return { 
+    owners: {
+      all: owners.all,
+      filtered: owners.filtered
+    }, 
+    loading, 
+    searchTerm, 
+    handleSearch,
+    refreshOwners: fetchOwners 
+  };
 };
 
 export default useOwners;
