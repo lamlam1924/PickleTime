@@ -759,7 +759,7 @@ CREATE TABLE RequestStatuses (
 );
 
 INSERT INTO RequestStatuses (StatusId, StatusName)
-VALUES (1, 'Pending'), (2, 'Approved'), (3, 'Rejected');
+VALUES (1, 'pending'), (2, 'accept'), (3, 'reject');
 
 
 GO
@@ -783,6 +783,31 @@ CREATE TABLE OwnerRequests (
 );
 GO
 
+UPDATE Roles
+SET RoleName = 'owner'
+WHERE RoleName = 'manager';
+GO
+
+UPDATE Roles
+SET RoleName = 'user'
+WHERE RoleName = 'customer';
+GO
+
+-- Cập nhật pending → reconsider
+UPDATE ReviewStatuses
+SET StatusName = 'reconsider'
+WHERE ReviewStatusID = 1;
+
+-- Cập nhật approved → accept
+UPDATE ReviewStatuses
+SET StatusName = 'accept'
+WHERE ReviewStatusID = 2;
+
+-- Cập nhật rejected → reject
+UPDATE ReviewStatuses
+SET StatusName = 'reject'
+WHERE ReviewStatusID = 3;
+GO
 
 /*******************************************************************************
 *******************************************************************************/

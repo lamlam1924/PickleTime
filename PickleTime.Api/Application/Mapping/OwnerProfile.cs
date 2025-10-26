@@ -4,9 +4,9 @@ using PickleTime.Api.Domain.Entities;
 
 namespace PickleTime.Api.Application.Mapping;
 
-public class OwnerRequestProfile : Profile
+public class OwnerProfile : Profile
 {
-    public OwnerRequestProfile()
+    public OwnerProfile()
     {
         // Entity → DTO (Response)
         CreateMap<OwnerRequest, OwnerRequestDto>()

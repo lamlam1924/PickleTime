@@ -1,5 +1,6 @@
 using PickleTime.Api.Application.Contract.Auth.Dto;
 using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Application.Contracts.Roles;
 using PickleTime.Api.Common.Helpers;
 
 namespace PickleTime.Api.Application.Services;
@@ -8,21 +9,27 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly JwtService _jwtService;
+    private readonly IRoleRepository _roleRepository;
 
-    public AuthService(IUserRepository userRepository, JwtService jwtService)
+    public AuthService(IUserRepository userRepository, JwtService jwtService
+    , IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
         _jwtService = jwtService;
+        _roleRepository = roleRepository;
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
+        // Bước 1: tìm tài khoản theo email (tùy thuộc loại account)
         var user = await _userRepository.GetByEmailAsync(request.Email);
-
         if (user == null)
             throw new UnauthorizedAccessException("Invalid email or password");
+        
+        if (user.Role == null)
+            user.Role = await _roleRepository.GetByIdAsync(user.RoleId);
 
-        // Verify password; support legacy plaintext passwords and auto-upgrade to BCrypt
+        // Bước 2: xác thực mật khẩu 
         var isBcryptHash = user.PassWord.StartsWith("$2");
         bool passwordValid;
         if (isBcryptHash)
@@ -31,7 +38,6 @@ public class AuthService : IAuthService
         }
         else
         {
-            // Legacy plaintext compare once, then upgrade to bcrypt if valid
             passwordValid = string.Equals(user.PassWord, request.Password);
             if (passwordValid)
             {
@@ -39,22 +45,21 @@ public class AuthService : IAuthService
                 await _userRepository.UpdateAsync(user);
             }
         }
-
         if (!passwordValid)
             throw new UnauthorizedAccessException("Invalid email or password");
-        
-        var roleName = user.Role?.RoleName ?? null;
-        
-        // cập nhật LastLogin chẳng hạn
+       
+        // Bước 3: cập nhật thông tin login
         user.LastLogin = DateTime.UtcNow;
         await _userRepository.UpdateAsync(user);
-
+        
+        // Bước 4: sinh token – dùng role thực tế trong hệ thống
         var token = _jwtService.GenerateToken(user);
 
         return new LoginResponseDto
         {
             Token = token,
-            Message = "Login successful"
+            Message = "Login successful",
+            Role = user.Role.RoleName 
         };
     }
 

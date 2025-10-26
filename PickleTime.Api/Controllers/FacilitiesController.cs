@@ -12,6 +12,7 @@ public class FacilitiesController : ControllerBase
 
     public FacilitiesController(IFacilityService service) => _facilityService = service;
 
+    // Tìm kiếm Facility theo từ khóa
     [HttpGet("search")]
     public async Task<IActionResult> Search([FromQuery] string keyword)
     {
@@ -19,6 +20,7 @@ public class FacilitiesController : ControllerBase
         return Ok(facilities);
     }
     
+    // Lấy tất cả Facility đang hoạt động
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<FacilityDto>>> GetAll()
     {
@@ -26,6 +28,7 @@ public class FacilitiesController : ControllerBase
         return Ok(facilities);
     }
 
+    // Lấy thông tin Facility theo ID
     [HttpGet("{id}")]
     public async Task<ActionResult<FacilityDto>> GetById(int id)
     {
@@ -35,6 +38,8 @@ public class FacilitiesController : ControllerBase
 
         return Ok(facility);
     }
+
+    // Lấy chi tiết Facility (bao gồm hình ảnh và sân)
     [HttpGet("detail/{id}")]
     public async Task<ActionResult<FacilityDetailDto>> GetFacilityById(int id)
     {
@@ -44,5 +49,4 @@ public class FacilitiesController : ControllerBase
 
         return Ok(facility);
     }
-
 }

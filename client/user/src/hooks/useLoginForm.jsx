@@ -10,16 +10,16 @@ import { useDispatch } from "react-redux";
 
 const loginSchema = yup.object().shape({
   email: yup
-    .string()
-    .required("Enter your email")
-    .matches(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/gm,
-      "Enter a valid email"
-    ),
+      .string()
+      .required("Enter your email")
+      .matches(
+          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/gm,
+          "Enter a valid email"
+      ),
   password: yup
-    .string()
-    .required("Enter your password")
-    .min(6, "Password must be at least 6 characters long"),
+      .string()
+      .required("Enter your password")
+      .min(6, "Password must be at least 6 characters long"),
 });
 
 const useLoginForm = () => {
@@ -43,8 +43,8 @@ const useLoginForm = () => {
       dispatch(login(result.token));
       navigate("/auth", { replace: true });
       axiosInstance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${result.token}`;
+          "Authorization"
+          ] = `Bearer ${result.token}`;
     } catch (error) {
       if (error.response) {
         toast.error(error.response?.data?.message);

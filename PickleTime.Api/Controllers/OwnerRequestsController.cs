@@ -16,7 +16,7 @@ public class OwnerRequestsController : ControllerBase
     }
 
     // [PORT 1] User gửi yêu cầu trở thành Owner
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] CreateOwnerRequestDto dto)
     {
         var result = await _service.CreateRequestAsync(dto);
@@ -32,7 +32,7 @@ public class OwnerRequestsController : ControllerBase
     }
 
     // [PORT 2] Admin xem danh sách yêu cầu
-    [HttpGet]
+    [HttpGet("list")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAllRequestsAsync();
@@ -46,4 +46,29 @@ public class OwnerRequestsController : ControllerBase
         var result = await _service.ReviewRequestAsync(id, dto);
         return Ok(result);
     }
+    
+    // Admin chấp nhận request (StatusId = 2)
+    [HttpPut("{id}/accept")]
+    public async Task<IActionResult> Accept(int id,[FromBody] ReviewOwnerRequestDto dto)
+    {
+        var result = await _service.AcceptRequestAsync(id, dto.ReviewedBy);
+        return Ok(result);
+    }
+
+    // Admin từ chối request (StatusId = 3)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Reject(int id,[FromBody] ReviewOwnerRequestDto dto)
+    {
+        var result = await _service.RejectRequestAsync(id, dto.ReviewedBy);
+        return Ok(result);
+    }
+
+    // Admin cho reconsider request (StatusId = 1)
+    [HttpPut("reconsider/{id}")]
+    public async Task<IActionResult> Reconsider(int id, [FromBody] ReviewOwnerRequestDto dto)
+    {
+        var result = await _service.ReconsiderRequestAsync(id, dto.ReviewedBy );
+        return Ok(result);
+    }
+
 }
