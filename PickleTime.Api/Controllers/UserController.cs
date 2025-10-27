@@ -7,7 +7,7 @@ using PickleTime.Api.Infrastructure.Data;
 namespace PickleTime.Api.Controller
 {
     [ApiController]
-    [Route("api/[controller]/auth")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly PickleTimeDbContext _context;

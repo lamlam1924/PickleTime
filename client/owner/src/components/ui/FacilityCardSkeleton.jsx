@@ -1,4 +1,4 @@
-const TurfCardSkeleton = () => {
+const FacilityCardSkeleton = () => {
   return (
     <div className="card bg-base-100 shadow-xl animate-pulse ">
       <div className="h-48 bg-base-300"></div>
@@ -17,4 +17,4 @@ const TurfCardSkeleton = () => {
   );
 };
 
-export default TurfCardSkeleton;
+export default FacilityCardSkeleton;

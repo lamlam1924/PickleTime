@@ -1,5 +1,4 @@
 using PickleTime.Api.Application.Contract.Auth.Dto;
-using PickleTime.Api.Application.Contracts.Auth.Dtos;
 
 namespace PickleTime.Api.Application.Contracts.Auth;
 

@@ -19,5 +19,9 @@ public partial class CourtImage
 
     public bool IsDeleted { get; set; }
 
+    public string? PublicId { get; set; }
+
     public virtual Court Court { get; set; } = null!;
+
+    public virtual ICollection<FacilityImage> FacilityImages { get; set; } = new List<FacilityImage>();
 }

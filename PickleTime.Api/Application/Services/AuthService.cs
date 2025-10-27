@@ -1,8 +1,6 @@
 using PickleTime.Api.Application.Contract.Auth.Dto;
 using PickleTime.Api.Application.Contracts.Auth;
-using PickleTime.Api.Application.Contracts.Auth.Dtos;
 using PickleTime.Api.Common.Helpers;
-using BCrypt.Net;
 
 namespace PickleTime.Api.Application.Services;
 
@@ -239,4 +237,6 @@ public class AuthService : IAuthService
             FullName = user.FullName
         };
     }
+    
+    
 }

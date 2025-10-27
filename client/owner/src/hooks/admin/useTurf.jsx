@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../useAxiosInstance";
  
-const useTurfData = () => {
+const useFacilityData = () => {
   const [turfData, setTurfData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,4 +29,4 @@ const useTurfData = () => {
   return { turfData, loading };
 };
 
-export default useTurfData;
+export default useFacilityData;

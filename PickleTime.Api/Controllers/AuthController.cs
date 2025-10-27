@@ -7,7 +7,7 @@ using PickleTime.Api.Application.Contracts.Auth.Dtos;
 namespace PickleTime.Api.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -183,6 +183,20 @@ public class AuthController : ControllerBase
             return Ok(result);
         }
         catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+    {
+        try
+        {
+            var result = await _authService.RegisterAsync(request);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
         {
             return BadRequest(new { message = ex.Message });
         }

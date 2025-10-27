@@ -148,7 +148,7 @@ GO
 /*******************************************************************************
 * SECTION 3: CORE TABLES
 *******************************************************************************/
--- Create Users table first as other tables depend on it
+-- Create the Users table first as other tables depend on it
 CREATE TABLE Users (
                        UserID INT PRIMARY KEY IDENTITY(1,1),
                        UserName NVARCHAR(50) NOT NULL UNIQUE,
@@ -714,14 +714,106 @@ GO
 
 /*******************************************************************************
 *******************************************************************************/
---00/00/2025
+--01/10/2025
+ALTER TABLE CourtImages
+    ADD PublicId NVARCHAR(255) NULL;
+GO
 
+/*******************************************************************************
+*******************************************************************************/
+--06/10/2025
+CREATE TABLE FacilityImages (
+                                ImageId INT IDENTITY(1,1) PRIMARY KEY,
+                                FacilityId INT NOT NULL,
+                                ImageUrl NVARCHAR(500) NOT NULL,
+                                IsMainImage BIT NOT NULL DEFAULT 0,
+                                DisplayOrder INT NOT NULL DEFAULT 0,
+                                Description NVARCHAR(500) NULL,
+                                CourtImageId INT NULL,
+                                IsDeleted BIT NOT NULL DEFAULT 0,
+                                PublicId NVARCHAR(250) NULL,
+
+                                CONSTRAINT FK_FacilityImages_Facilities FOREIGN KEY (FacilityId)
+                                    REFERENCES Facilities(FacilityId) ON DELETE CASCADE,
+
+                                CONSTRAINT FK_FacilityImages_CourtImages FOREIGN KEY (CourtImageId)
+                                    REFERENCES CourtImages(ImageId) ON DELETE NO ACTION
+);
+GO
+/*******************************************************************************
+*******************************************************************************/
+--13/10/2025
+
+INSERT INTO Reviews ( FacilityId, CourtId, UserId, BookingId, Rating, Comment, Aspects, ReviewDate, ReviewStatusId, IsVerifiedBooking, IsDeleted)
+VALUES
+    (1, 1, 3, 1, 5, N'Sân rất sạch sẽ và dịch vụ tốt!', 'Cleanliness, Service', '2025-10-13 10:00:00', 1, 1, 0),
+    (2, 3, 4, 3, 4, N'Sân đẹp nhưng hơi đông vào cuối tuần.', 'Facility Quality, Crowdedness', '2025-10-14 11:30:00', 1, 1, 0)
+GO
+/*******************************************************************************
+*******************************************************************************/
+--15/10/2025
+
+CREATE TABLE RequestStatuses (
+                                 StatusId INT PRIMARY KEY,
+                                 StatusName NVARCHAR(50) NOT NULL
+);
+
+INSERT INTO RequestStatuses (StatusId, StatusName)
+VALUES (1, 'pending'), (2, 'accept'), (3, 'reject');
+
+
+GO
+
+CREATE TABLE OwnerRequests (
+                               RequestId INT PRIMARY KEY IDENTITY(1,1),
+                               FullName NVARCHAR(100) NOT NULL,
+                               Email NVARCHAR(100) NOT NULL,
+                               Phone NVARCHAR(20) NOT NULL,
+
+                               StatusId INT NOT NULL DEFAULT 1,                  -- FK → RequestStatuses (1: Pending, 2: Approved, 3: Rejected)
+                               SubmittedAt DATETIME NOT NULL DEFAULT GETDATE(),
+                               ReviewedAt DATETIME NULL,
+                               ReviewedBy INT NULL,                              -- FK → Users(UserId) (admin)
+                               AdminNote NVARCHAR(500) NULL,                     -- Lý do duyệt/từ chối
+                               CreatedUserId INT NULL,                           -- Nếu người gửi đã login
+
+                               FOREIGN KEY (ReviewedBy) REFERENCES Users(UserId),
+                               FOREIGN KEY (CreatedUserId) REFERENCES Users(UserId),
+                               FOREIGN KEY (StatusId) REFERENCES RequestStatuses(StatusId)
+);
+GO
+
+UPDATE Roles
+SET RoleName = 'owner'
+WHERE RoleName = 'manager';
+GO
+
+UPDATE Roles
+SET RoleName = 'user'
+WHERE RoleName = 'customer';
+GO
+
+-- Cập nhật pending → reconsider
+UPDATE ReviewStatuses
+SET StatusName = 'reconsider'
+WHERE ReviewStatusID = 1;
+
+-- Cập nhật approved → accept
+UPDATE ReviewStatuses
+SET StatusName = 'accept'
+WHERE ReviewStatusID = 2;
+
+-- Cập nhật rejected → reject
+UPDATE ReviewStatuses
+SET StatusName = 'reject'
+WHERE ReviewStatusID = 3;
+GO
 
 /*******************************************************************************
 *******************************************************************************/
 --00/00/2025
 
-
+    
 /*******************************************************************************
 *******************************************************************************/
 --00/00/2025

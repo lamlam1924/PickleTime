@@ -8,5 +8,5 @@ public interface IUserRepository
     Task<User?> GetByGoogleIdAsync(string googleId);
     Task<User?> GetByResetTokenAsync(string token);
     Task UpdateAsync(User user);
-    Task CreateAsync(User user);
+    Task<User> CreateAsync(User user);
 }

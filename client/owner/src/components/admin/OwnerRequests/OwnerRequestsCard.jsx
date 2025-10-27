@@ -17,12 +17,13 @@ const OwnerRequestCard = ({
   isProcessing,
   isRejected,
 }) => {
+  
   return (
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title flex items-center">
           <User size={20} className="mr-2" />
-          {request.name}
+          {request.fullName}
         </h2>
         <p className="flex items-center text-sm text-gray-600">
           <Mail size={16} className="mr-2" />
@@ -30,12 +31,12 @@ const OwnerRequestCard = ({
         </p>
         <p className="flex items-center text-sm text-gray-600">
           <Calendar size={16} className="mr-2" />
-          {format(new Date(request.createdAt), "MMM dd, yyyy")}
+          {format(new Date(request.submittedAt), "MMM dd, yyyy")}
         </p>
         <div className="card-actions justify-end mt-4">
           {isRejected ? (
             <button
-              onClick={() => onReconsider(request._id)}
+              onClick={() => onReconsider(request.requestId)}
               className="btn btn-sm btn-primary relative"
               disabled={isProcessing}
             >
@@ -49,7 +50,7 @@ const OwnerRequestCard = ({
           ) : (
             <>
               <button
-                onClick={() => onAccept(request._id)}
+                onClick={() => onAccept(request.requestId)}
                 className="btn btn-sm btn-success relative text-base-200"
                 disabled={isProcessing}
               >
@@ -61,7 +62,7 @@ const OwnerRequestCard = ({
                 )}
               </button>
               <button
-                onClick={() => onReject(request._id)}
+                onClick={() => onReject(request.requestId)}
                 className="btn btn-sm btn-error relative text-base-200"
                 disabled={isProcessing}
               >
@@ -79,5 +80,4 @@ const OwnerRequestCard = ({
     </div>
   );
 };
-
 export default OwnerRequestCard;

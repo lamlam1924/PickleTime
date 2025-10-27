@@ -35,20 +35,20 @@ export default function AuthNavbar() {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <Link to="/auth">Home</Link>
+              <Link to="/auth">Trang chủ</Link>
             </li>
             <li>
-              <Link to="/auth/turfs">Turfs</Link>
+              <Link to="/auth/turfs">Tìm kiếm</Link>
             </li>
             <li>
-              <Link to="/auth/booking-history">My Bookings</Link>
+              <Link to="/auth/booking-history">Lịch của tôi</Link>
             </li>
             <li>
               <NavLink
                 to="/auth/become-owner"
                 className={({ isActive }) => (isActive ? "text-accent" : "")}
               >
-                Become an Owner
+                Tham gia với vai trò chủ sân
               </NavLink>
             </li>
           </ul>
@@ -56,7 +56,7 @@ export default function AuthNavbar() {
         <Link to="/auth" className="btn btn-ghost normal-case text-xl">
           <img
             src="/logo.png"
-            alt="TurfSpot"
+            alt="PickleTime"
             className="h-10 w-10 mask mask-squircle"
           />
           TurfSpot
@@ -65,20 +65,20 @@ export default function AuthNavbar() {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link to="/auth">Home</Link>
+            <Link to="/auth">Trang chủ</Link>
           </li>
           <li>
-            <Link to="/auth/turfs">Turfs</Link>
+            <Link to="/auth/turfs">Tìm kiếm</Link>
           </li>
           <li>
-            <Link to="/auth/booking-history">My Bookings</Link>
+            <Link to="/auth/booking-history">Lịch của tôi</Link>
           </li>
           <li>
             <NavLink
               to="/auth/become-owner"
               className={({ isActive }) => (isActive ? "text-accent" : "")}
             >
-              Become an Owner
+              Tham gia với vai trò chủ sân
             </NavLink>
           </li>
         </ul>
@@ -86,7 +86,7 @@ export default function AuthNavbar() {
       <div className="navbar-end">
         <ThemeSwitcher />
         <button className="btn btn-ghost" onClick={handleLogout}>
-          Logout
+          Đăng xuất
         </button>
       </div>
     </div>
