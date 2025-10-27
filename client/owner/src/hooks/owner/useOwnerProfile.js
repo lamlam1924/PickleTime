@@ -25,7 +25,7 @@ const useOwnerProfile = () => {
       setUpdating(true);
       const response = await axiosInstance.put('/owner/profile', data);
       setProfile(response.data.data);
-      toast.success('✅ Cập nhật thông tin thành công!');
+      toast.success('Cập nhật thông tin thành công!');
       return { success: true };
     } catch (error) {
       console.error('Error updating owner profile:', error);
@@ -41,7 +41,7 @@ const useOwnerProfile = () => {
     try {
       setUpdating(true);
       await axiosInstance.put('/owner/profile/password', data);
-      toast.success('✅ Đổi mật khẩu thành công!');
+      toast.success('Đổi mật khẩu thành công!');
       return { success: true };
     } catch (error) {
       console.error('Error changing password:', error);

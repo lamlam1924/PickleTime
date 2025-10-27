@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import PublicNavbar from "../components/layout/GuestNavbar";
+import GuestNavbar from "../components/layout/GuestNavbar";
 
-const PublicLayout = () => {
+const GuestLayout = () => {
   return (
     <div className="flex flex-col min-h-screen ">
-      <PublicNavbar />
+      <GuestNavbar />
       <main className="flex-grow pt-16 ">
         <Outlet />
       </main>
@@ -12,4 +12,4 @@ const PublicLayout = () => {
   );
 };
 
-export default PublicLayout;
+export default GuestLayout;

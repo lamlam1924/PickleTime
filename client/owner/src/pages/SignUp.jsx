@@ -8,18 +8,18 @@ const SignUp = () => {
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="card w-full max-w-4xl bg-base-100 shadow-xl border">
         <div className="card-body max-md:p-4">
-          <h2 className="card-title justify-center text-2xl mb-6">Sign Up</h2>
+          <h2 className="card-title justify-center text-2xl mb-6"> Đăng ký tài khoản</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="lg:grid grid-cols-2 gap-4">
               <FormField
-                label="Name"
+                label="Họ và tên"
                 name="name"
                 type="text"
                 register={register}
                 error={errors.name}
               />
               <FormField
-                label="Phone Number"
+                label="Số điện thoại"
                 name="phone"
                 type="text"
                 register={register}
@@ -35,14 +35,14 @@ const SignUp = () => {
             />
             <div className="lg:grid grid-cols-2 gap-4">
               <FormField
-                label="Password"
+                label="Mật khẩu"
                 name="password"
                 type="password"
                 register={register}
                 error={errors.password}
               />
               <FormField
-                label="Confirm Password"
+                label="Xác nhận mật khẩu"
                 name="confirmPassword"
                 type="password"
                 register={register}
@@ -56,13 +56,13 @@ const SignUp = () => {
                 className="btn-primary w-full"
                 loading={loading}
               >
-                Sign Up
+                Tạo tài khoản
               </Button>
             </div>
           </form>
           <div className="text-center mt-6">
             <Link to="/login" className="link link-hover">
-              Already have an account? Login
+              Đã có tài khoản? Đăng nhập ngay
             </Link>
           </div>
         </div>

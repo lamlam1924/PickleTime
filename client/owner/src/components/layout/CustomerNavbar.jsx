@@ -3,12 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import Avatar from "react-avatar";
 import { logout } from "../../redux/slices/authSlice";
 import ThemeSwitcher from "../common/ThemeSwitcher";
+import {getRoleHomePath} from "@utils/rolePath.jsx";
 
 const CustomerNavbar = () => {
   const { isAuthenticated, user, role } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const dashboardPath = getRoleHomePath(role);
+  
   const handleLogout = () => {
     dispatch(logout());
     navigate("/", { replace: true });
@@ -39,7 +41,7 @@ const CustomerNavbar = () => {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300"
           >
             <li>
-              <Link to="/" className="gap-3 py-3">
+              <Link to={getRoleHomePath(role)} className="gap-3 py-3">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -76,28 +78,28 @@ const CustomerNavbar = () => {
                 <span>Tìm sân</span>
               </Link>
             </li>
-            <li>
-              <Link to="/about" className="gap-3 py-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>Giới thiệu</span>
-              </Link>
-            </li>
+            {/*<li>*/}
+            {/*  <Link to="/about" className="gap-3 py-3">*/}
+            {/*    <svg*/}
+            {/*      xmlns="http://www.w3.org/2000/svg"*/}
+            {/*      className="h-5 w-5"*/}
+            {/*      fill="none"*/}
+            {/*      viewBox="0 0 24 24"*/}
+            {/*      stroke="currentColor"*/}
+            {/*    >*/}
+            {/*      <path*/}
+            {/*        strokeLinecap="round"*/}
+            {/*        strokeLinejoin="round"*/}
+            {/*        strokeWidth="2"*/}
+            {/*        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"*/}
+            {/*      />*/}
+            {/*    </svg>*/}
+            {/*    <span>Giới thiệu</span>*/}
+            {/*  </Link>*/}
+            {/*</li>*/}
           </ul>
         </div>
-        <Link to="/" className="btn btn-ghost normal-case text-xl max-sm:p-0">
+        <Link to="/customer" className="btn btn-ghost normal-case text-xl max-sm:p-0">
           <img
             src="/logo.png"
             alt="PickleTime"
@@ -109,7 +111,7 @@ const CustomerNavbar = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link to="/" className="gap-2">
+            <Link to={getRoleHomePath(role)} className="gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -146,25 +148,25 @@ const CustomerNavbar = () => {
               Tìm sân
             </Link>
           </li>
-          <li>
-            <Link to="/about" className="gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Giới thiệu
-            </Link>
-          </li>
+          {/*<li>*/}
+          {/*  <Link to="/about" className="gap-2">*/}
+          {/*    <svg*/}
+          {/*      xmlns="http://www.w3.org/2000/svg"*/}
+          {/*      className="h-5 w-5"*/}
+          {/*      fill="none"*/}
+          {/*      viewBox="0 0 24 24"*/}
+          {/*      stroke="currentColor"*/}
+          {/*    >*/}
+          {/*      <path*/}
+          {/*        strokeLinecap="round"*/}
+          {/*        strokeLinejoin="round"*/}
+          {/*        strokeWidth="2"*/}
+          {/*        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"*/}
+          {/*      />*/}
+          {/*    </svg>*/}
+          {/*    Giới thiệu*/}
+          {/*  </Link>*/}
+          {/*</li>*/}
         </ul>
       </div>
       <div className="navbar-end gap-2">

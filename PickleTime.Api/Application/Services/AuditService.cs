@@ -1,7 +1,6 @@
+using System.Text.Json;
 using PickleTime.Api.Domain.Entities;
 using PickleTime.Api.Infrastructure.Data;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http;
 
 namespace PickleTime.Api.Application.Services;
 

@@ -35,7 +35,7 @@ const useProfile = () => {
       setUpdating(true);
       const response = await axiosInstance.put('/profile', data);
       setProfile(response.data.data);
-      toast.success('✅ Cập nhật thông tin thành công!');
+      toast.success('Cập nhật thông tin thành công!');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật thông tin';
@@ -50,7 +50,7 @@ const useProfile = () => {
     try {
       setUpdating(true);
       await axiosInstance.put('/profile/password', data);
-      toast.success('✅ Đổi mật khẩu thành công!');
+      toast.success('Đổi mật khẩu thành công!');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu';
@@ -65,7 +65,7 @@ const useProfile = () => {
     try {
       setUpdating(true);
       await axiosInstance.delete('/profile', { data: { password } });
-      toast.success('✅ Tài khoản đã được vô hiệu hóa');
+      toast.success(' Tài khoản đã được vô hiệu hóa');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Có lỗi xảy ra';

@@ -10,7 +10,7 @@ public class AuditLog
     public int ActorUserId { get; set; }
     
     /// <summary>
-    /// Target User ID (if action is on another user)
+    /// Target User ID (if the action is on another user)
     /// </summary>
     public int? TargetUserId { get; set; }
     

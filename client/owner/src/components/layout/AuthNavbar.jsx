@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 export default function AuthNavbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLogout = () => {
+  const handleLogout = () => {z
     dispatch(logout());
     navigate("/", { replace: true });
   };

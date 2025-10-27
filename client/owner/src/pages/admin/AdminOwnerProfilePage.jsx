@@ -210,7 +210,7 @@ const AdminOwnerProfilePage = () => {
     setLoading(true);
     try {
       await axiosInstance.post('/auth/change-password', data);
-      toast.success('✅ Đổi mật khẩu thành công!');
+      toast.success('Đổi mật khẩu thành công!');
       setShowPasswordModal(false);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu!');

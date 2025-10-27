@@ -1,12 +1,11 @@
 // src/hooks/useGoogleLogin.jsx
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { login } from "../redux/slices/authSlice";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {login} from "../redux/slices/authSlice";
 import axiosInstance from "./useAxiosInstance";
 import toast from "react-hot-toast";
-import { persistor } from "../redux/store";
-import { useGoogleLogin as useGoogleLoginLib } from "@react-oauth/google";
+import {persistor} from "../redux/store";
 
 const useGoogleLogin = () => {
   const [loading, setLoading] = useState(false);

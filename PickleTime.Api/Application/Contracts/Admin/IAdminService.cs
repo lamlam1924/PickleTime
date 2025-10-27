@@ -1,6 +1,3 @@
-using PickleTime.Api.Application.Contracts.Admin;
-using PickleTime.Api.Application.Contracts.Auth.Dtos;
-
 namespace PickleTime.Api.Application.Contracts.Admin
 {
     public interface IAdminService
