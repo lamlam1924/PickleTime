@@ -8,7 +8,7 @@ const useFacilityById = (id) => {
     useEffect(() => {
         const fetchFacility = async () => {
             try {
-                const response = await axiosInstance.get(`/api/facilities/${id}`);
+                const response = await axiosInstance.get(`/facilities/${id}`);
                 setFacility(response.data);
             } catch (error) {
                 console.error("Failed to fetch facility:", error);

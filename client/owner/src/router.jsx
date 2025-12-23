@@ -2,7 +2,6 @@ import React from "react";
 import {createBrowserRouter} from "react-router-dom";
 
 // import {ProtectedRoute} from "@components/ProtectedRoute"
-
 import Home from "@pages/Home.jsx";
 import Login from "@pages/Login";
 import SignUp from "@pages/SignUp";
@@ -11,34 +10,31 @@ import ResetPassword from "@pages/ResetPassword";
 import GoogleCallback from "@pages/GoogleCallback";
 
 //  all the components that are used in the layout
-import {AdminLayout, OwnerLayout, GuestLayout} from "@layouts";
+import {AdminLayout, GuestLayout, OwnerLayout} from "@layouts";
 import CustomerLayout from "@layouts/CustomerLayout";
 
 //  all the components that are used in the owner dashboard
-import {
-    AddTurf,
-    OwnerDashboard,
-    TurfManagement,
-    OwnerReviews,
-    OwnerBookings,
-} from "@components/owner";
+import {AddTurf, OwnerBookings, OwnerDashboard, OwnerReviews, TurfManagement,} from "@components/owner";
 
 //  all the components that are used in the admin dashboard
 import {
-    UserManagement,
-    NewOwnerRequests,
-    RejectedOwnerRequests,
     AdminDashboard,
-    OwnerPage,
-    TurfList,
     AllTurf,
+    NewOwnerRequests,
+    OwnerPage,
+    RejectedOwnerRequests,
     TransactionSection,
+    TurfList,
+    UserManagement,
 } from "@components/admin";
 import ProtectedRoute from "@components/ProtectedRoute/ProtectedRoute";
 
 // 404 page
-
 import {NotFound} from "@components/common";
+import Facility from "@components/turf/Facility.jsx";
+import FacilityDetails from "@components/turf/FacilityDetails.jsx";
+import BecomeOwner from "@/features/becomeOwner/BecomeOwner.jsx";
+import RoleSwitcherPage from "@pages/RoleSwitcherPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -76,7 +72,7 @@ const router = createBrowserRouter([
     {
         path: "/admin",
         element: (
-            <ProtectedRoute requiredRole="admin">
+            <ProtectedRoute allowedRoleIds={[1]}>
                 <AdminLayout/>
             </ProtectedRoute>
         ),
@@ -113,7 +109,7 @@ const router = createBrowserRouter([
     {
         path: "/owner",
         element: (
-            <ProtectedRoute requiredRole={["owner", "manager"]}>
+            <ProtectedRoute allowedRoleIds={[2]}>
                 <OwnerLayout/>
             </ProtectedRoute>
         ),
@@ -136,16 +132,15 @@ const router = createBrowserRouter([
     {
         path: "/customer",
         element: (
-            <ProtectedRoute requiredRole={["customer", "user"]}>
+            <ProtectedRoute allowedRoleIds={[3]}>
                 <CustomerLayout/>
             </ProtectedRoute>
         ),
         children: [
-            {
-                index: true,
-                element: <div className="p-8"><h1 className="text-2xl font-bold">Trang Khách hàng</h1><p>Chào mừng bạn
-                    đến với PickleTime</p></div>
-            },
+            {index: true, element: <Home/>}, // 👈 Dùng lại Home.jsx
+            {path: "search", element: <Facility/>},
+            {path: "turf/:id", element: <FacilityDetails/>},
+            {path: "become-owner", element: <BecomeOwner/>},
             {
                 path: "profile",
                 element: (
@@ -155,6 +150,13 @@ const router = createBrowserRouter([
                 )
             },
         ],
+    },
+
+    {
+        path: "/select-role",
+        element: (
+            <RoleSwitcherPage/>
+        ),
     },
 ]);
 

@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import EditProfileModal from '@components/admin/UserManagement/EditUserModal';
 import toast from 'react-hot-toast';
 import axiosInstance from '@hooks/useAxiosInstance';
+import { selectCurrentRole } from '@/redux/rootReducers';
 
 // Simple Change Password Modal Component
 const ChangePasswordModal = ({ onClose, onSave, loading }) => {
@@ -159,11 +160,27 @@ const ChangePasswordModal = ({ onClose, onSave, loading }) => {
 };
 
 const AdminOwnerProfilePage = () => {
-  const { user, role } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
+  const role = useSelector(selectCurrentRole);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [statistics, setStatistics] = useState(null);
+  const [profile, setProfile] = useState(null);
+  
+  // Fetch profile data from backend
+  React.useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axiosInstance.get('/profile');
+        setProfile(response.data.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast.error('Không thể tải thông tin hồ sơ');
+      }
+    };
+    fetchProfile();
+  }, []);
 
   // Fetch owner statistics if role is owner
   React.useEffect(() => {
@@ -197,8 +214,9 @@ const AdminOwnerProfilePage = () => {
       await axiosInstance.put(`/admin/users/${user.userId}`, formData);
       toast.success('✅ Cập nhật hồ sơ thành công!');
       setShowEditModal(false);
-      // Reload page to update user info
-      window.location.reload();
+      // Reload profile data
+      const response = await axiosInstance.get('/profile');
+      setProfile(response.data.data);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật hồ sơ!');
     } finally {
@@ -209,7 +227,13 @@ const AdminOwnerProfilePage = () => {
   const handleChangePassword = async (data) => {
     setLoading(true);
     try {
-      await axiosInstance.post('/auth/change-password', data);
+      // Backend expects CurrentPassword, NewPassword, ConfirmPassword
+      const payload = {
+        currentPassword: data.oldPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword
+      };
+      await axiosInstance.put('/profile/password', payload);
       toast.success('Đổi mật khẩu thành công!');
       setShowPasswordModal(false);
     } catch (error) {
@@ -237,6 +261,16 @@ const AdminOwnerProfilePage = () => {
     return <User size={16} />;
   };
 
+  if (!profile) {
+    return (
+      <div className="container mx-auto p-4 max-w-6xl">
+        <div className="flex items-center justify-center h-96">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       {/* Header Section */}
@@ -247,7 +281,7 @@ const AdminOwnerProfilePage = () => {
             <div className="avatar">
               <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                 <Avatar 
-                  name={user?.fullName || user?.userName || user?.email}
+                  name={profile?.fullName || profile?.userName || profile?.email}
                   size={96}
                   round={true}
                 />
@@ -257,29 +291,34 @@ const AdminOwnerProfilePage = () => {
             {/* User Info */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold">{user?.fullName || user?.userName}</h1>
+                <h1 className="text-3xl font-bold">
+                  {profile?.fullName || profile?.userName}
+                </h1>
                 <div className={`badge ${getRoleBadgeColor()} gap-2`}>
                   {getRoleIcon()}
                   {getRoleLabel()}
                 </div>
               </div>
-              <p className="text-base-content/60 mb-2">@{user?.userName}</p>
+              {/* Chỉ hiển thị @username nếu có fullName riêng */}
+              {profile?.fullName && (
+                <p className="text-base-content/60 mb-2">@{profile.userName}</p>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Mail size={16} className="text-base-content/50" />
-                  <span>{user?.email}</span>
+                  <span>{profile?.email}</span>
                 </div>
-                {user?.phone && (
+                {profile?.phone && (
                   <div className="flex items-center gap-2 text-sm">
                     <Phone size={16} className="text-base-content/50" />
-                    <span>{user?.phone}</span>
+                    <span>{profile.phone}</span>
                   </div>
                 )}
-                {user?.createdAt && (
+                {profile?.createdAt && (
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-base-content/50" />
-                    <span>Tham gia: {format(new Date(user.createdAt), 'dd/MM/yyyy')}</span>
+                    <span>Tham gia: {format(new Date(profile.createdAt), 'dd/MM/yyyy')}</span>
                   </div>
                 )}
               </div>

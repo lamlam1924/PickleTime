@@ -1,142 +1,120 @@
-import { useState, useEffect, useCallback } from "react";
+// src/hooks/admin/useOwnerRequests.jsx
+import {useState, useEffect, useCallback} from "react";
 import axiosInstance from "../useAxiosInstance";
 import toast from "react-hot-toast";
-import { useLocation } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 
 const useOwnerRequests = () => {
-  const [requests, setRequests] = useState([]);
-  const [allRequests, setAllRequests] = useState([]);
-  const [rejectedRequests, setRejectedRequests] = useState([]);
-  const [allRejectedRequests, setAllRejectedRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [requestId, setRequestId] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const location = useLocation();
+    const [requests, setRequests] = useState([]);
+    const [allRequests, setAllRequests] = useState([]);
+    const [rejectedRequests, setRejectedRequests] = useState([]);
+    const [allRejectedRequests, setAllRejectedRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [requestId, setRequestId] = useState(null); // ← Thống nhất tên
 
-  const currentPath = location.pathname.split("/").pop();
+    const location = useLocation();
+    const currentPath = location.pathname.split("/").pop();
 
-  const handleSearch = useCallback(
-    (term) => {
-      setSearchTerm(term);
-      if (term === "") {
-        setRequests(allRequests);
-        setRejectedRequests(allRejectedRequests);
-        return;
-      }
-      setSearchTerm(term);
-      const filtered =
-        currentPath === "new"
-          ? requests.filter(
-              (request) =>
-                request.name.toLowerCase().includes(term.toLowerCase()) ||
-                request.email.toLowerCase().includes(term.toLowerCase())
-            )
-          : rejectedRequests.filter(
-              (request) =>
-                request.name.toLowerCase().includes(term.toLowerCase()) ||
-                request.email.toLowerCase().includes(term.toLowerCase())
-            );
+    // Reset khi đổi tab
+    useEffect(() => {
+        if (!Array.isArray(allRequests) || !Array.isArray(allRejectedRequests)) return;
+        if (currentPath === "new") setRequests(allRequests);
+        else if (currentPath === "rejected") setRejectedRequests(allRejectedRequests);
+    }, [currentPath, allRequests, allRejectedRequests]);
 
-      if (currentPath === "new") {
-        setRequests(filtered);
-      } else if (currentPath === "rejected") {
-        setRejectedRequests(filtered);
-      }
-    },
-    [allRequests, allRejectedRequests]
-  );
+    // Tìm kiếm an toàn
+    const handleSearch = useCallback(
+        (term) => {
+            const lower = term.trim().toLowerCase();
+            if (!Array.isArray(allRequests) || !Array.isArray(allRejectedRequests)) return;
 
-  const fetchRequests = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get("/api/admin/OwnerRequests/list");
-      const data = await response.data; // mảng request từ backend
+            if (lower === "") {
+                setRequests(allRequests);
+                setRejectedRequests(allRejectedRequests);
+                return;
+            }
 
-      // Lọc theo trạng thái
-      const pendingRequests = data.filter(r => r.statusName.toLowerCase() === "pending");
-      const rejected = data.filter(r => r.statusName.toLowerCase() === "rejected");
-      
-      setRequests(pendingRequests);
-      setAllRequests(pendingRequests);
-      setRejectedRequests(rejected);
-      setAllRejectedRequests(rejected);
+            const safeLower = (str) => (typeof str === "string" ? str.toLowerCase() : "");
+            const filter = (list) =>
+                list.filter((r) => {
+                    const fullName = safeLower(r.fullName);
+                    const email = safeLower(r.email);
+                    return fullName.includes(lower) || email.includes(lower);
+                });
 
-    } catch (err) {
-      console.error("[ERROR] Failed to fetch owner requests:", err);
-      toast.error(err.response.data.message|| "Failed to fetch requests");
-    } finally {
-      setLoading(false);
-    }
-  };
+            if (currentPath === "new") setRequests(filter(allRequests));
+            else if (currentPath === "rejected") setRejectedRequests(filter(allRejectedRequests));
+        },
+        [allRequests, allRejectedRequests, currentPath]
+    );
 
-  const handleAccept = async (id) => {
-    setRequestId(id);
-    try {
-      const response = await axiosInstance.put(
-        `/api/admin/OwnerRequests/${id}/accept`
-      );
-      const result = await response.data;
-       toast.success(result.message);
-      setRequests(requests.filter((request) => request.requestId !== id));
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response.data.message);
-    } finally {
-      setRequestId("");
-    }
-  };
+    // Lấy dữ liệu + sanitize
+    const fetchRequests = async () => {
+        setLoading(true);
+        try {
+            const {data = []} = await axiosInstance.get("/AdminOwnerRequests/list");
+            const sanitize = (item) => ({
+                ...item,
+                fullName: item.fullName || item.FullName || "",
+                email: item.email || item.Email || "",
+            });
+            const sanitizedData = data.map(sanitize);
 
-  const handleReject = async (id) => {
-    setRequestId(id);
-    try {
-      const response = await axiosInstance.delete(
-        `/api/admin/OwnerRequests/${id}`
-      );
-      const result = await response.data;
-      toast.success(result.message);
-      setRequests(requests.filter((request) => request.requestId !== id));
-    } catch (err) {
-      console.error(err, "delete error");
-      toast.error(err.response?.data?.message);
-    } finally {
-      setRequestId("");
-    }
-  };
+            const pending = sanitizedData.filter((r) => Number(r.statusId) === 1);
+            const rejected = sanitizedData.filter((r) => Number(r.statusId) === 3);
 
-  const handleReconsider = async (id) => {
-    setRequestId(id);
-    try {
-      const response = await axiosInstance.put(
-        `/api/admin/OwnerRequests/reconsider/${id}`
-      );
-      const result = await response.data;
-      toast.success(result.message);
-      setRejectedRequests(
-        rejectedRequests.filter((request) => request.requestId !== id)
-      );
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message);
-    } finally {
-      setRequestId("");
-    }
-  };
+            setAllRequests(pending);
+            setRequests(pending);
+            setAllRejectedRequests(rejected);
+            setRejectedRequests(rejected);
+        } catch (err) {
+            console.error("[ERROR] Fetch:", err);
+            toast.error("Không thể tải danh sách");
+            setAllRequests([]);
+            setRequests([]);
+            setAllRejectedRequests([]);
+            setRejectedRequests([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  useEffect(() => {
-    fetchRequests();
-  }, []);
+    // Hành động chung
+    const callAction = async (id, endpoint, msg) => {
+        if (!id) return;
+        setRequestId(id);
+        try {
+            await axiosInstance.put(`/AdminOwnerRequests/${id}/${endpoint}`);
+            toast.success(msg);
+            await fetchRequests();
+        } catch (error) {
+            console.error(`${endpoint} error:`, error);
+            toast.error(msg.replace("Đã ", "") + " thất bại");
+        } finally {
+            setRequestId(null);
+        }
+    };
 
-  return {
-    requests,
-    loading,
-    handleAccept,
-    handleReject,
-    requestId,
-    rejectedRequests,
-    handleReconsider,
-    searchTerm,
-    handleSearch,
-  };
+    const handleAccept = (id) => callAction(id, "accept", "Đã duyệt");
+    const handleReject = (id) => callAction(id, "reject", "Đã từ chối");
+    const handleReconsider = (id) => callAction(id, "reconsider", "Đã xem xét lại");
+
+    useEffect(() => {
+        (async () => {
+            await fetchRequests();
+        })();
+    }, [currentPath]);
+
+    return {
+        requests,
+        rejectedRequests,
+        loading,
+        requestId,
+        handleSearch,
+        handleAccept,
+        handleReject,
+        handleReconsider,
+    };
 };
 
 export default useOwnerRequests;

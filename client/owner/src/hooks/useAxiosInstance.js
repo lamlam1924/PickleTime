@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5104/api",
+  // Dùng proxy Vite để tránh CORS khi dev
+  baseURL: "/api",
   withCredentials: true,
 });
 
@@ -30,15 +31,22 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
   }
 
-  // Otherwise try to get from localStorage
+  // Prefer accessToken from localStorage, then fall back to persisted redux
   let token = null;
+  const lsToken = localStorage.getItem("accessToken");
+  if (lsToken) {
+    token = lsToken;
+  }
+
   try {
-    const persistedUser = localStorage.getItem("persist:root");
-    if (persistedUser) {
-      const parsedUser = JSON.parse(persistedUser);
-      if (parsedUser.auth) {
-        const parsedAuth = JSON.parse(parsedUser.auth);
-        token = parsedAuth.token;
+    if (!token) {
+      const persistedUser = localStorage.getItem("persist:root");
+      if (persistedUser) {
+        const parsedUser = JSON.parse(persistedUser);
+        if (parsedUser.auth) {
+          const parsedAuth = JSON.parse(parsedUser.auth);
+          token = parsedAuth.token;
+        }
       }
     }
   } catch (error) {

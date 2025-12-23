@@ -17,19 +17,19 @@ const AdminSidebar = ({ isOpen, toggleSidebar, className }) => {
   const [ownerRequestsOpen, setOwnerRequestsOpen] = useState(false);
 
   const navItems = [
-    { to: "/admin", label: "Dashboard", icon: Home },
+    { to: "/admin", label: "Tổng quan", icon: Home },
     {
-      label: "Owner Requests",
+      label: "Yêu cầu chủ sân",
       icon: UserPlus,
       subItems: [
-        { to: "/admin/owner-requests/new", label: "New Requests" },
-        { to: "/admin/owner-requests/rejected", label: "Rejected Requests" },
+        { to: "/admin/owner-requests/new", label: "Yêu cầu mới" },
+        { to: "/admin/owner-requests/rejected", label: "Yêu cầu bị từ chối" },
       ],
     },
-    { to: "/admin/users", label: "Users", icon: Users },
-    { to: "/admin/owners", label: "Owners", icon: Building },
-    { to: "/admin/turfs", label: "Turfs", icon: MapPin },
-    { to: "/admin/transactions", label: "Transactions", icon: DollarSign },
+    { to: "/admin/users", label: "Người dùng", icon: Users },
+    { to: "/admin/owners", label: "Chủ sân", icon: Building },
+    { to: "/admin/turfs", label: "Sân thể thao", icon: MapPin },
+    { to: "/admin/transactions", label: "Giao dịch", icon: DollarSign },
   ];
 
   const toggleOwnerRequests = () => {
@@ -108,7 +108,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, className }) => {
           min-h-screen`}
     >
       <div className="flex items-center justify-between p-4 border-b">
-        <span className="text-xl font-semibold">Admin Dashboard</span>
+        <span className="text-xl font-semibold">Bảng điều khiển</span>
         <button onClick={toggleSidebar} className="lg:hidden">
           <X size={24} />
         </button>

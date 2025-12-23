@@ -20,61 +20,50 @@ const useGoogleLogin = () => {
         throw new Error("No credential received from Google");
       }
 
-      // Send the Google credential token to backend
+      // Gửi credential token lên backend
       const response = await axiosInstance.post("/auth/google-login", { 
         credential: credentialResponse.credential
       });
       const result = response.data;
 
-      console.log("Google Login Response:", result);
-
       if (!result.token) {
         throw new Error("No token received from server");
       }
 
-      toast.success(result.message || "Google login successful");
-      
-      // Construct user object from response
+      // Lưu token vào localStorage
+      localStorage.setItem("accessToken", result.token);
+
+      // Lấy roles từ response của backend
+      const userRoles = Array.isArray(result.roles)
+        ? result.roles.map(r => r.roleId).filter(Boolean)
+        : [];
+
+      // Tạo user object
       const user = {
         userId: result.userId,
         email: result.email,
-        userName: result.userName,
-        fullName: result.fullName
+        fullName: result.fullName || result.userName,
+        roles: userRoles
       };
-      
-      // Normalize role
-      const userRole = result.role.toLowerCase();
-      
-      console.log("User Role:", userRole);
-      console.log("User ID:", result.userId);
-      
-      // Store token and user info in Redux
+
+      // Dispatch login action
       dispatch(login({ 
         token: result.token,
-        role: userRole,
-        userId: result.userId,
         user: user
       }));
-      
-      // Set token in axios headers immediately
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${result.token}`;
-      
-      // Wait for Redux persist to flush to localStorage
+
+      // Đợi Redux persist lưu xong
       await persistor.flush();
+
+      toast.success(result.message || "Đăng nhập Google thành công");
+
+      // Điều hướng đến trang chọn role (tương tự login thường)
+      navigate("/select-role", { replace: true });
       
-      // Redirect based on role
-      if(userRole === "admin") {
-        navigate("/admin", { replace: true });
-      } else if(userRole === "manager" || userRole === "owner") {
-        navigate("/owner", { replace: true });
-      } else if(userRole === "customer" || userRole === "user") {
-        navigate("/customer", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
     } catch (error) {
       console.error("Google login error:", error);
-      toast.error(error.response?.data?.message || error.message || "Google login failed. Please try again.");
+      const message = error.response?.data?.message || error.message || "Đăng nhập Google thất bại. Vui lòng thử lại.";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

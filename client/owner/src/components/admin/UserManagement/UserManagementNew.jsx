@@ -18,7 +18,12 @@ const UserManagementNew = () => {
       user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.userName?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === "all" || user.roleName === roleFilter;
+    
+    // Check if user has the selected role (support multiple roles)
+    const matchesRole = roleFilter === "all" || 
+      (user.roles && user.roles.some(r => r.roleId === parseInt(roleFilter))) ||
+      user.roleName === roleFilter;
+    
     const matchesStatus =
       statusFilter === "all" || user.statusName === statusFilter;
     return matchesSearch && matchesRole && matchesStatus;
@@ -90,9 +95,9 @@ const UserManagementNew = () => {
               className="select select-bordered w-full"
             >
               <option value="all">All Roles</option>
-              <option value="admin">Admin</option>
-              <option value="manager">Manager</option>
-              <option value="customer">Customer</option>
+              <option value="1">Quản trị viên</option>
+              <option value="2">Chủ sân</option>
+              <option value="3">Khách hàng</option>
             </select>
           </div>
 
@@ -172,9 +177,19 @@ const UserManagementNew = () => {
                       </div>
                     </td>
                     <td>
-                      <span className="badge badge-primary badge-sm">
-                        {user.roleName}
-                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles && user.roles.length > 0 ? (
+                          user.roles.map((role) => (
+                            <span key={role.roleId} className="badge badge-primary badge-sm">
+                              {role.displayName || role.roleName}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="badge badge-ghost badge-sm">
+                            {user.roleName || 'N/A'}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td>
                       <span
@@ -350,12 +365,20 @@ const UserManagementNew = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Role</span>
+                  <span className="label-text font-medium">Role(s)</span>
                 </label>
-                <div>
-                  <span className="badge badge-primary">
-                    {selectedUser.roleName}
-                  </span>
+                <div className="flex flex-wrap gap-2">
+                  {selectedUser.roles && selectedUser.roles.length > 0 ? (
+                    selectedUser.roles.map((role) => (
+                      <span key={role.roleId} className="badge badge-primary">
+                        {role.displayName || role.roleName}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="badge badge-ghost">
+                      {selectedUser.roleName || 'N/A'}
+                    </span>
+                  )}
                 </div>
               </div>
 

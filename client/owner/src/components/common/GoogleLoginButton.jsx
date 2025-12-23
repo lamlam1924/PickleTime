@@ -1,7 +1,7 @@
 const GoogleLoginButton = ({ loading, className = "" }) => {
   const handleClick = () => {
-    // Redirect to backend Google OAuth endpoint
-    window.location.href = "http://localhost:5104/api/auth/google-login";
+    // Redirect to backend Google OAuth endpoint through Vite proxy
+    window.location.href = "/api/auth/google-login";
   };
 
   return (
@@ -37,7 +37,7 @@ const GoogleLoginButton = ({ loading, className = "" }) => {
           />
         </svg>
       )}
-      Continue with Google
+      Đăng nhập với Google
     </button>
   );
 };

@@ -1,56 +1,76 @@
-import {useSelector} from "react-redux";
-import {Navigate, Outlet, useLocation} from "react-router-dom";
+// src/components/ProtectedRoute/ProtectedRoute.jsx
+import { useSelector } from "react-redux";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { getRoleConfig } from "@/config/roleConfig";
 
-export default function ProtectedRoute({children, requiredRole}) {
-    const {isAuthenticated, role} = useSelector((state) => state?.auth);
+const ProtectedRoute = ({ allowedRoleIds = [], children }) => {
+    const {
+        isAuthenticated,
+        token,
+        roles,
+        selectedRoleId,
+    } = useSelector((state) => state.auth);
+
     const location = useLocation();
 
-    //  Khi Redux Persist chưa khôi phục state (rehydrate)
-    if (isAuthenticated === undefined || role === undefined || isAuthenticated == null || role == null) {
+    // 1. Chưa hydrate xong redux-persist
+    if (isAuthenticated === undefined) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <span className="loading loading-spinner loading-lg"></span>
+                <span className="loading loading-spinner loading-lg" />
             </div>
         );
     }
 
-    //  Nếu chưa đăng nhập
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{from: location}} replace/>;
+    if (import.meta?.env?.MODE !== "production") {
+        console.debug("[ProtectedRoute] state", { isAuthenticated, hasToken: !!token, roles, selectedRoleId, allowedRoleIds, path: location.pathname });
     }
 
-    // console.log("ProtectedRoute:", {isAuthenticated, role, requiredRole});
+    // 2. Chưa đăng nhập
+    if (!isAuthenticated || !token) {
+        return (
+            <Navigate
+                to="/login"
+                state={{ from: location }}
+                replace
+            />
+        );
+    }
 
-    //  Chuẩn hoá role
-    const normalizedRole = (() => {
-        const r = role?.toLowerCase();
-        if (r === "manager") return "owner";
-        if (r === "user") return "customer"; // 👈 Thêm dòng này
-        return r;
-    })();
+    // 3. Không có role nào → coi như lỗi hệ thống
+    if (!roles || roles.length === 0) {
+        return <Navigate to="/login" replace />;
+    }
 
-    //  Hỗ trợ 1 hoặc nhiều role
-    const allowedRoles = Array.isArray(requiredRole)
-        ? requiredRole.map(r => r?.toLowerCase())
-        : requiredRole
-            ? [requiredRole?.toLowerCase()]
-            : [];
-
-
-    //  Nếu role không nằm trong allowed list
-    if (requiredRole && !allowedRoles.includes(normalizedRole)) {
-        if (normalizedRole === "admin") {
-            return <Navigate to="/admin" replace/>;
-        } else if (normalizedRole === "owner") {
-            return <Navigate to="/owner" replace/>;
-        } else if (normalizedRole === "customer") {
-            return <Navigate to="/" replace/>;
-        } else {
-            return <Navigate to="/" replace/>;
+    // 4. CHƯA CHỌN ROLE → đưa về trang chọn role, giữ deep-link bằng next
+    if (!selectedRoleId) {
+        if (roles.length > 1) {
+            const next = encodeURIComponent(location.pathname + location.search);
+            if (import.meta?.env?.MODE !== "production") {
+                console.debug("[ProtectedRoute] no selectedRoleId, multiple roles → redirect to select-role", { next });
+            }
+            return <Navigate to={`/select-role?next=${next}`} replace />;
         }
+        // Nếu chỉ có 1 role, để RoleSwitcher tự xử lý auto-chọn.
     }
 
-    //  Render nội dung (children hoặc <Outlet />)
-    return children ?? <Outlet/>;
+    const effectiveRoleId = selectedRoleId || (roles.length === 1 ? roles[0] : null);
 
-}
+    // 5. Route có yêu cầu role cụ thể
+    if (
+        allowedRoleIds.length > 0 &&
+        (!effectiveRoleId || !allowedRoleIds.includes(effectiveRoleId))
+    ) {
+        // Vai trò hiện tại không phù hợp route này → yêu cầu chọn lại role
+        const next = encodeURIComponent(location.pathname + location.search);
+        if (import.meta?.env?.MODE !== "production") {
+            console.debug("[ProtectedRoute] role not allowed → redirect select-role", { effectiveRoleId, allowedRoleIds, next });
+        }
+        return <Navigate to={`/select-role?next=${next}`} replace />;
+    }
+
+    // 6. HỢP LỆ → render layout (children) nếu được truyền, nếu không thì dùng Outlet cho cấu trúc lồng route
+    return children ? children : <Outlet />;
+};
+
+export default ProtectedRoute;

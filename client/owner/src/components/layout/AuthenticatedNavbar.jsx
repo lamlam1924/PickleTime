@@ -2,13 +2,24 @@ import {Link, useNavigate} from "react-router-dom";
 import Avatar from 'react-avatar';
 import ThemeSwitcher from "../common/ThemeSwitcher.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {logout} from "@redux/slices/authSlice.js";
+import {logout, setSelectedRole} from "@redux/slices/authSlice.js";
 import {getRoleHomePath} from "@utils/rolePath.jsx";
+import NotificationBell from "@components/common/NotificationBell.jsx";
+import {Shield, Crown, User} from "lucide-react";
+import {getCurrentRoleConfig} from "@/config/roleConfig.js"; // thêm dòng này
+import useAssumeRole from "@/hooks/useAssumeRole";
 
 const AuthenticatedNavbar = ({toggleSidebar}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {role, user} = useSelector((state) => state?.auth);
+    const {user, selectedRoleId, roles = [], userId} = useSelector(state => state.auth);
+
+    const currentRole = selectedRoleId === 1 ? "admin" :
+        selectedRoleId === 2 ? "owner" :  // hoặc "manager"
+            selectedRoleId === 3 ? "customer" : null;
+
+    // Lọc bỏ role hiện tại
+    const otherRoles = roles.filter(id => id !== selectedRoleId);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -17,22 +28,23 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
 
     // Get a profile path based on the role
     const getProfilePath = () => {
-        if (role === "admin") return "/admin/profile";
-        if (role === "manager" || role === "owner") return "/owner/profile";
+        if (currentRole === "admin") return "/admin/profile";
+        if (currentRole === "manager" || currentRole === "owner") return "/owner/profile";
         return "/customer/profile";
     };
 
     const getRoleLabel = () => {
-        if (role === "admin") return "Quản trị viên";
-        if (role === "manager" || role === "owner") return "Chủ sân";
+        if (currentRole === "admin") return "Quản trị viên";
+        if (currentRole === "manager" || currentRole === "owner") return "Chủ sân";
         return "Khách hàng";
     };
 
     const getRoleBadgeColor = () => {
-        if (role === "admin") return "badge-error";
-        if (role === "manager" || role === "owner") return "badge-warning";
+        if (currentRole === "admin") return "badge-error";
+        if (currentRole === "manager" || currentRole === "owner") return "badge-warning";
         return "badge-info";
     };
+    const { assumeRole } = useAssumeRole();
 
     return (
         <div className="navbar bg-base-100 fixed top-0 z-50 shadow-md animate-slide-in-top">
@@ -57,7 +69,7 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
                     </svg>
                 </button>
                 <Link
-                    to={getRoleHomePath(role)}
+                    to={getRoleHomePath(currentRole)}
                     className="btn btn-ghost normal-case text-xl max-sm:p-0"
                 >
                     <img
@@ -70,11 +82,11 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
             </div>
 
             {/* Center links chỉ cho customer */}
-            {role === "customer" && (
+            {currentRole === "customer" && (
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1 gap-1">
-                        <li><Link to="/">Trang chủ</Link></li>
-                        <li><Link to="/turfs">Tìm sân</Link></li>
+                        <li><Link to="/customer">Trang chủ</Link></li>
+                        <li><Link to="/customer/turfs">Tìm sân</Link></li>
                         <li><Link to="/customer/turfs">Sân yêu thích</Link></li>
                         <li><Link to="/customer/booking-history">Lịch sử đặt sân</Link></li>
                         <li><Link to="/customer/become-owner" className="text-warning font-medium">Trở thành chủ
@@ -85,15 +97,15 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
 
             <div className="navbar-end gap-2">
                 <ThemeSwitcher/>
-
+                <NotificationBell userId={userId}/>
                 {/* User Profile Dropdown */}
                 <div className="dropdown dropdown-end">
                     <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                             <Avatar
                                 name={user?.fullName || user?.userName || user?.email || "User"}
-                                size={40}
-                                round={true}
+                                size="40"
+                                round="100%"
                             />
                         </div>
                     </label>
@@ -106,8 +118,8 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
                             <div className="flex items-center gap-3">
                                 <Avatar
                                     name={user?.fullName || user?.userName || user?.email || "User"}
-                                    size={48}
-                                    round={true}
+                                    size="48"
+                                    round="100%"
                                 />
                                 <div className="flex-1 min-w-0">
                                     <p className="font-bold text-[11px] truncate text-base-content">
@@ -146,7 +158,7 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
 
                         {/* Dashboard Link */}
                         <li>
-                            <Link to={getRoleHomePath(role)} className="gap-3 py-3">
+                            <Link to={getRoleHomePath(currentRole)} className="gap-3 py-3">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-5 w-5"
@@ -166,7 +178,7 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
                         </li>
 
                         {/* Owner-specific links */}
-                        {(role === "manager" || role === "owner") && (
+                        {(currentRole === "manager" || currentRole === "owner") && (
                             <>
                                 <li>
                                     <Link to="/owner/turfs" className="gap-3 py-3">
@@ -231,6 +243,32 @@ const AuthenticatedNavbar = ({toggleSidebar}) => {
                                         <span>Đánh giá</span>
                                     </Link>
                                 </li>
+                            </>
+                        )}
+
+                        <div className="divider my-1"></div>
+
+                        {otherRoles.length > 0 && (
+                            <>
+                                <div className="divider my-2"/>
+                                <li className="menu-title"><span className="text-xs opacity-70">Chuyển vai trò</span>
+                                </li>
+                                {otherRoles.map(id => {
+                                    const r = getCurrentRoleConfig(id);
+                                    const RoleIcon = r.icon === "Shield" ? Shield : r.icon === "Crown" ? Crown : User;
+                                    return (
+                                        <li key={id}>
+                                                <button onClick={() => assumeRole(id)}
+                                                    className="justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <RoleIcon size={19} className={r.color}/>
+                                                    <span className="font-medium">{r.label}</span>
+                                                </div>
+                                                <div className="badge badge-outline badge-primary badge-sm">Chuyển</div>
+                                            </button>
+                                        </li>
+                                    );
+                                })}
                             </>
                         )}
 

@@ -1,6 +1,5 @@
-import { Outlet } from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import CustomerNavbar from "@components/layout/CustomerNavbar";
-import {AuthenticatedNavbar} from "@components/layout/index.jsx";
 
 const CustomerLayout = () => {
   return (

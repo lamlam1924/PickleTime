@@ -9,7 +9,7 @@ const useReviews = (facilityId) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axiosInstance.get(`/api/reviews/${facilityId}`);
+      const response = await axiosInstance.get(`/reviews/${facilityId}`);
        const result = response.data;
        setReviews(result.reviews);
       setAverageRating(result.averageRating);

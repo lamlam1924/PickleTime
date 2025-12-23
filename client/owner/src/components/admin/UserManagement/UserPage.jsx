@@ -63,7 +63,11 @@ const UserPage = () => {
 
   // Filter by role and status
   const filteredUsers = users.filter(user => {
-    const roleMatch = selectedRole === "all" || user.roleName?.toLowerCase() === selectedRole;
+    // Check if user has the selected role (support multiple roles)
+    const roleMatch = selectedRole === "all" || 
+      (user.roles && user.roles.some(r => r.roleId === parseInt(selectedRole))) ||
+      user.roleName?.toLowerCase() === selectedRole;
+    
     // Fix: Backend returns lowercase 'active'/'inactive', but we need to match properly
     const userStatusLower = user.statusName?.toLowerCase();
     const statusMatch = selectedStatus === "all" || userStatusLower === selectedStatus.toLowerCase();
@@ -80,8 +84,10 @@ const UserPage = () => {
       user.email?.toLowerCase().includes(searchLower) ||
       user.phone?.toLowerCase().includes(searchLower);
     
-    // Role match
-    const roleMatch = selectedRole === "all" || user.roleName?.toLowerCase() === selectedRole;
+    // Role match (support multiple roles)
+    const roleMatch = selectedRole === "all" || 
+      (user.roles && user.roles.some(r => r.roleId === parseInt(selectedRole))) ||
+      user.roleName?.toLowerCase() === selectedRole;
     
     return searchMatch && roleMatch;
   });
@@ -89,7 +95,7 @@ const UserPage = () => {
   const getRoleBadgeColor = (role) => {
     const roleLower = role?.toLowerCase();
     if (roleLower === "admin") return "badge-error";
-    if (roleLower === "manager") return "badge-warning";
+    if (roleLower === "manager" || roleLower === "owner") return "badge-warning";
     return "badge-info";
   };
 
@@ -101,14 +107,12 @@ const UserPage = () => {
   const getRoleIcon = (role) => {
     const roleLower = role?.toLowerCase();
     if (roleLower === "admin") return <Shield size={14} />;
-    if (roleLower === "manager") return <Crown size={14} />;
+    if (roleLower === "manager" || roleLower === "owner") return <Crown size={14} />;
     return <Users size={14} />;
   };
 
   // Helper: Check if user can be managed (Admin cannot edit/delete themselves)
   const canManageUser = (user) => {
-    const roleLower = user.roleName?.toLowerCase();
-    
     // Check if this is the current logged-in user
     const isCurrentUser = currentUserId && (
       user.userId === currentUserId || 
@@ -118,19 +122,27 @@ const UserPage = () => {
     
     // Rule 1: Admin CANNOT manage themselves (no edit/delete/disable own account)
     if (isCurrentUser) {
-      
       return false;
     }
     
-    // Rule 2: Admin can manage Manager and Customer (lower roles)
-    if (roleLower === "manager" || roleLower === "customer") {
+    // Check if user has admin role (roleId = 1)
+    const hasAdminRole = (user.roles && user.roles.some(r => r.roleId === 1)) || 
+                        user.roleName?.toLowerCase() === "admin";
+    
+    // Rule 2: Admin CANNOT manage other Admins
+    if (hasAdminRole) {
+      return false;
+    }
+    
+    // Rule 3: Admin can manage Manager/Owner (roleId=2) and Customer (roleId=3)
+    const hasManagerRole = (user.roles && user.roles.some(r => r.roleId === 2)) || 
+                          user.roleName?.toLowerCase() === "manager" ||
+                          user.roleName?.toLowerCase() === "owner";
+    const hasCustomerRole = (user.roles && user.roles.some(r => r.roleId === 3)) || 
+                           user.roleName?.toLowerCase() === "customer";
+    
+    if (hasManagerRole || hasCustomerRole) {
       return true;
-    }
-    
-    // Rule 3: Admin CANNOT manage other Admins
-    if (roleLower === "admin") {
-      
-      return false;
     }
     
     return false;
@@ -328,8 +340,9 @@ const UserPage = () => {
                 onChange={(e) => setSelectedRole(e.target.value)}
               >
                 <option value="all">Tất cả Quyền</option>
-                <option value="admin">Admin</option>
-                <option value="customer">Customer</option>
+                <option value="1">Quản trị viên</option>
+                <option value="2">Chủ sân</option>
+                <option value="3">Khách hàng</option>
               </select>
             </div>
 
@@ -421,9 +434,20 @@ const UserPage = () => {
 
                       {/* Role */}
                       <td>
-                        <div className={`badge ${getRoleBadgeColor(user.roleName)} gap-2`}>
-                          {getRoleIcon(user.roleName)}
-                          {user.roleName}
+                        <div className="flex flex-wrap gap-1">
+                          {user.roles && user.roles.length > 0 ? (
+                            user.roles.map((role) => (
+                              <div key={role.roleId} className={`badge ${getRoleBadgeColor(role.roleName)} badge-sm gap-1`}>
+                                {getRoleIcon(role.roleName)}
+                                {role.displayName || role.roleName}
+                              </div>
+                            ))
+                          ) : (
+                            <div className={`badge ${getRoleBadgeColor(user.roleName)} badge-sm gap-1`}>
+                              {getRoleIcon(user.roleName)}
+                              {user.roleName}
+                            </div>
+                          )}
                         </div>
                       </td>
 
@@ -611,9 +635,20 @@ const UserPage = () => {
 
                         {/* Role */}
                         <td>
-                          <div className={`badge ${getRoleBadgeColor(user.roleName)} gap-2`}>
-                            {getRoleIcon(user.roleName)}
-                            {user.roleName}
+                          <div className="flex flex-wrap gap-1">
+                            {user.roles && user.roles.length > 0 ? (
+                              user.roles.map((role) => (
+                                <div key={role.roleId} className={`badge ${getRoleBadgeColor(role.roleName)} badge-sm gap-1`}>
+                                  {getRoleIcon(role.roleName)}
+                                  {role.displayName || role.roleName}
+                                </div>
+                              ))
+                            ) : (
+                              <div className={`badge ${getRoleBadgeColor(user.roleName)} badge-sm gap-1`}>
+                                {getRoleIcon(user.roleName)}
+                                {user.roleName}
+                              </div>
+                            )}
                           </div>
                         </td>
 
@@ -686,9 +721,12 @@ const UserPage = () => {
           <div className="stat-figure text-error">
             <Shield size={32} />
           </div>
-          <div className="stat-title">Admins</div>
+          <div className="stat-title">Quản trị viên</div>
           <div className="stat-value text-error">
-            {users.filter(u => u.roleName?.toLowerCase() === "admin").length}
+            {users.filter(u => 
+              (u.roles && u.roles.some(r => r.roleId === 1)) || 
+              u.roleName?.toLowerCase() === "admin"
+            ).length}
           </div>
         </div>
         
@@ -696,9 +734,13 @@ const UserPage = () => {
           <div className="stat-figure text-warning">
             <Crown size={32} />
           </div>
-          <div className="stat-title">Managers</div>
+          <div className="stat-title">Chủ sân</div>
           <div className="stat-value text-warning">
-            {users.filter(u => u.roleName?.toLowerCase() === "manager").length}
+            {users.filter(u => 
+              (u.roles && u.roles.some(r => r.roleId === 2)) || 
+              u.roleName?.toLowerCase() === "manager" ||
+              u.roleName?.toLowerCase() === "owner"
+            ).length}
           </div>
         </div>
         
@@ -706,9 +748,12 @@ const UserPage = () => {
           <div className="stat-figure text-info">
             <Users size={32} />
           </div>
-          <div className="stat-title">Customers</div>
+          <div className="stat-title">Khách hàng</div>
           <div className="stat-value text-info">
-            {users.filter(u => u.roleName?.toLowerCase() === "customer").length}
+            {users.filter(u => 
+              (u.roles && u.roles.some(r => r.roleId === 3)) || 
+              u.roleName?.toLowerCase() === "customer"
+            ).length}
           </div>
         </div>
 
@@ -757,9 +802,20 @@ const UserPage = () => {
               </div>
               <div>
                 <p className="text-sm opacity-70">Quyền</p>
-                <div className={`badge ${getRoleBadgeColor(selectedUser.roleName)} gap-2 mt-1`}>
-                  {getRoleIcon(selectedUser.roleName)}
-                  {selectedUser.roleName}
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {selectedUser.roles && selectedUser.roles.length > 0 ? (
+                    selectedUser.roles.map((role) => (
+                      <div key={role.roleId} className={`badge ${getRoleBadgeColor(role.roleName)} gap-1`}>
+                        {getRoleIcon(role.roleName)}
+                        {role.displayName || role.roleName}
+                      </div>
+                    ))
+                  ) : (
+                    <div className={`badge ${getRoleBadgeColor(selectedUser.roleName)} gap-1`}>
+                      {getRoleIcon(selectedUser.roleName)}
+                      {selectedUser.roleName}
+                    </div>
+                  )}
                 </div>
               </div>
               <div>

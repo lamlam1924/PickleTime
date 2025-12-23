@@ -1,5 +1,5 @@
 import React from "react";
-import { format } from "date-fns";
+import { format, isValid, parseISO } from 'date-fns';
 import {
   User,
   Mail,
@@ -8,6 +8,20 @@ import {
   XCircle,
   RefreshCw,
 } from "lucide-react";
+import {vi} from "date-fns/locale";
+
+const safeFormatDate = (dateInput) => {
+  if (!dateInput) return 'Không có dữ liệu';
+  let date;
+  try {
+    date = typeof dateInput === 'string' ? parseISO(dateInput) : new Date(dateInput);
+    return isValid(date)
+        ? format(date, 'dd/MM/yyyy', { locale: vi }) // ← SỬA DÒNG NÀY
+        : 'Ngày không hợp lệ';
+  } catch {
+    return 'Ngày không hợp lệ';
+  }
+};
 
 const OwnerRequestCard = ({
   request,
@@ -31,7 +45,7 @@ const OwnerRequestCard = ({
         </p>
         <p className="flex items-center text-sm text-gray-600">
           <Calendar size={16} className="mr-2" />
-          {format(new Date(request.submittedAt), "MMM dd, yyyy")}
+          {safeFormatDate(request.submittedAt)}
         </p>
         <div className="card-actions justify-end mt-4">
           {isRejected ? (
@@ -44,7 +58,7 @@ const OwnerRequestCard = ({
               {isProcessing ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : (
-                "Reconsider"
+                "Xem xét lại"
               )}
             </button>
           ) : (
@@ -58,7 +72,7 @@ const OwnerRequestCard = ({
                 {isProcessing ? (
                   <span className="loading loading-spinner loading-sm"></span>
                 ) : (
-                  "Accept"
+                  "Chấp thuận"
                 )}
               </button>
               <button
@@ -70,7 +84,7 @@ const OwnerRequestCard = ({
                 {isProcessing ? (
                   <span className="loading loading-spinner loading-sm"></span>
                 ) : (
-                  "Reject"
+                  "Từ chối"
                 )}
               </button>
             </>

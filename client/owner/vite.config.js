@@ -16,4 +16,26 @@ export default defineConfig({
       "@layouts": path.resolve(__dirname, "./src/layouts")
     },
   },
+  server: {
+    port: 5174,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5104",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/hubs": {
+        target: "http://localhost:5104",
+        ws: true,
+        changeOrigin: true,
+        secure: false,
+      },
+      "/notificationHub": {
+        target: "http://localhost:5104",
+        ws: true,
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 });

@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const FacilityCard = ({ turf }) => {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.auth.isAuthenticated);
   return (
       <div className="card bg-base-100 shadow-xl animate-bounce-fade-in">
         <figure>
@@ -26,10 +26,10 @@ const FacilityCard = ({ turf }) => {
           </p>
           <div className="card-actions justify-end mt-4">
             <Link
-                to={isLoggedIn ? `/auth/turf/${turf.facilityId}` : `/turf/${turf.facilityId}`}
+                to={isLoggedIn ? `/customer/turf/${turf.facilityId}` : `/login`}
                 className="btn btn-primary"
             >
-              View Details
+              Chi tiết
             </Link>
           </div>
         </div>

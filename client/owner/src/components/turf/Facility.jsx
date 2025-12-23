@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import FacilityCard from "./FacilityCard.jsx";
-import FacilityCardSkeleton from "../ui/FacilityCardSkeleton.jsx";
-import useFacilityData from "../../hooks/useFacilityData.jsx";
-import SearchFacility from "../search/SearchFacility.jsx";
+import SearchFacility from "@components/search/SearchFacility.jsx";
+import useFacilityData from "@hooks/useFacilityData.jsx";
+import FacilityCardSkeleton from "@components/ui/FacilityCardSkeleton.jsx";
+import FacilityCard from "@components/turf/FacilityCard.jsx";
 
 const Facility = () => {
     const { turfs= [], loading, error } = useFacilityData();

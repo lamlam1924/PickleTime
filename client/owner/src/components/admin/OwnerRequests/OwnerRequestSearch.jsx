@@ -1,25 +1,34 @@
- 
-import React from "react";
+// src/components/admin/OwnerRequests/OwnerRequestSearch.jsx
+import React, { useState } from "react";
 import { Search } from "lucide-react";
 
-const OwnerRequestSearch = ({ searchTerm, handleSearch }) => {
-  return (
-    <div className="form-control w-full max-w-xs">
-      <label className="label">
-        <span className="label-text">Search requests</span>
-      </label>
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="Search by name or email"
-          className="input input-bordered w-full pr-10"
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-        <Search className="absolute top-3 right-3 h-5 w-5 text-gray-400" />
-      </div>
-    </div>
-  );
+const OwnerRequestSearch = ({ handleSearch }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleSearch(searchTerm.trim());
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="form-control w-full max-w-xs">
+            <label className="label">
+                <span className="label-text">Tìm kiếm</span>
+            </label>
+            <div className="relative">
+                <input
+                    type="text"
+                    placeholder="Nhập tên hoặc email..."
+                    className="input input-bordered w-full pr-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button type="submit" className="absolute top-2 right-2 btn btn-ghost btn-circle">
+                    <Search className="h-5 w-5" />
+                </button>
+            </div>
+        </form>
+    );
 };
 
 export default OwnerRequestSearch;

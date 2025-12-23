@@ -40,12 +40,18 @@ const useOwnerProfile = () => {
   const changePassword = async (data) => {
     try {
       setUpdating(true);
-      await axiosInstance.put('/owner/profile/password', data);
+      // Backend expects CurrentPassword, NewPassword, ConfirmPassword
+      const payload = {
+        currentPassword: data.oldPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword
+      };
+      await axiosInstance.put('/owner/profile/password', payload);
       toast.success('Đổi mật khẩu thành công!');
       return { success: true };
     } catch (error) {
       console.error('Error changing password:', error);
-      const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra';
+      const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu';
       toast.error(errorMessage);
       return { success: false, error: errorMessage };
     } finally {

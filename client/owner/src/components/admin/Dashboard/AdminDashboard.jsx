@@ -24,7 +24,7 @@ const AdminDashboard = () => {
  if (error) {
    return (
      <div className="flex justify-center items-center h-screen">
-       <p>Error loading dashboard data. Please try again later.</p>
+       <p>Không thể tải dữ liệu. Vui lòng thử lại sau.</p>
      </div>
    );
  }
@@ -41,30 +41,30 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-base-200 p-4">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center lg:text-left">
-          Admin Dashboard
+            Bảng điều khiển PickleTime
         </h1>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <StatCard
-            title="Total Users"
+            title="Người dùng"
             value={data.totalUsers}
             icon={Users}
             className="bg-base-100"
           />
           <StatCard
-            title="Total Owners"
+            title="Chủ sân"
             value={data.totalOwners}
             icon={Building}
             className="bg-base-100"
           />
           <StatCard
-            title="Total Turfs"
+            title="Sân thể thao"
             value={data.totalTurfs}
             icon={MapPin}
             className="bg-base-100"
           />
           <StatCard
-            title="Total Bookings"
+            title="Lượt đặt sân"
             value={data.totalBookings}
             icon={CreditCard}
             className="bg-base-100"
@@ -73,19 +73,19 @@ const AdminDashboard = () => {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
           <StatCard
-            title="Pending Requests"
+            title="Yêu cầu đang chờ"
             value={data.pendingRequests}
             icon={UserPlus}
             className="bg-warning text-warning-content"
           />
           <StatCard
-            title="Rejected Requests"
+            title="Yêu cầu bị từ chối"
             value={data.rejectedRequests}
             icon={UserX}
             className="bg-error text-error-content"
           />
           <StatCard
-            title="Total Revenue"
+            title="Tổng doanh thu"
             value={totalRevenue}
             icon={TrendingUp}
             prefix="₹"
@@ -95,16 +95,16 @@ const AdminDashboard = () => {
 
         <div className="card bg-base-100 shadow-xl mb-8">
           <div className="card-body max:md:p-0">
-            <h2 className="card-title mb-4">Booking History</h2>
+            <h2 className="card-title mb-4">Biểu đồ doanh thu & lượt đặt sân</h2>
             <div className="flex justify-end mb-4">
               <select
                 className="select select-bordered w-full max-w-xs"
                 value={selectedTimeRange}
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
               >
-                <option value="7">Last 7 days</option>
-                <option value="30">Last 30 days</option>
-                <option value="90">Last 90 days</option>
+                <option value="7">7 ngày gần đây</option>
+                <option value="30">30 ngày gần đây</option>
+                <option value="90">90 ngày gần đây</option>
               </select>
             </div>
             <BookingHistoryChart

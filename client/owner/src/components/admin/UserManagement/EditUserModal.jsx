@@ -8,26 +8,31 @@ const EditUserModal = ({ user, onClose, onSave, loading }) => {
     phone: "",
     address: "",
     membershipType: "",
-    roleId: ""
+    roleIds: [] // Changed to array for multiple roles
   });
 
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (user) {
-      // Map roleName to roleId
-      let roleId = "";
-      const roleLower = user.roleName?.toLowerCase();
-      if (roleLower === "admin") roleId = 1;
-      else if (roleLower === "manager") roleId = 2;
-      else if (roleLower === "customer") roleId = 3;
+      // Extract roleIds from user.roles array
+      let roleIds = [];
+      if (user.roles && user.roles.length > 0) {
+        roleIds = user.roles.map(r => r.roleId);
+      } else {
+        // Fallback to single roleName for backward compatibility
+        const roleLower = user.roleName?.toLowerCase();
+        if (roleLower === "admin") roleIds = [1];
+        else if (roleLower === "manager" || roleLower === "owner") roleIds = [2];
+        else if (roleLower === "customer") roleIds = [3];
+      }
       
       setFormData({
         fullName: user.fullName || "",
         phone: user.phone || "",
         address: user.address || "",
         membershipType: user.membershipType || "",
-        roleId: roleId
+        roleIds: roleIds
       });
     }
   }, [user]);
@@ -56,6 +61,11 @@ const EditUserModal = ({ user, onClose, onSave, loading }) => {
       newErrors.address = "Địa chỉ không được quá 200 ký tự";
     }
 
+    // Role validation
+    if (!formData.roleIds || formData.roleIds.length === 0) {
+      newErrors.roleIds = "Phải chọn ít nhất một quyền";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -63,12 +73,9 @@ const EditUserModal = ({ user, onClose, onSave, loading }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Convert roleId to number
-    const finalValue = name === 'roleId' ? parseInt(value, 10) : value;
-    
     setFormData(prev => ({
       ...prev,
-      [name]: finalValue
+      [name]: value
     }));
     
     // Clear error for this field
@@ -76,6 +83,35 @@ const EditUserModal = ({ user, onClose, onSave, loading }) => {
       setErrors(prev => ({
         ...prev,
         [name]: undefined
+      }));
+    }
+  };
+
+  const handleRoleToggle = (roleId) => {
+    setFormData(prev => {
+      const currentRoles = prev.roleIds || [];
+      const hasRole = currentRoles.includes(roleId);
+      
+      let newRoles;
+      if (hasRole) {
+        // Remove role
+        newRoles = currentRoles.filter(id => id !== roleId);
+      } else {
+        // Add role
+        newRoles = [...currentRoles, roleId];
+      }
+      
+      return {
+        ...prev,
+        roleIds: newRoles
+      };
+    });
+    
+    // Clear role error
+    if (errors.roleIds) {
+      setErrors(prev => ({
+        ...prev,
+        roleIds: undefined
       }));
     }
   };
@@ -90,7 +126,7 @@ const EditUserModal = ({ user, onClose, onSave, loading }) => {
         phone: formData.phone?.trim(),
         address: formData.address?.trim() || null,
         membershipType: formData.membershipType || null,
-        roleId: formData.roleId || null
+        roleIds: formData.roleIds && formData.roleIds.length > 0 ? formData.roleIds : null
       };
       
       // Remove null/undefined values
@@ -227,25 +263,52 @@ const EditUserModal = ({ user, onClose, onSave, loading }) => {
               </select>
             </div>
 
-            {/* Role - EDITABLE (Admin can change Manager/Customer roles) */}
+            {/* Roles - EDITABLE (Admin can assign multiple roles) */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-semibold">
                   Quyền <span className="text-error">*</span>
                 </span>
               </label>
-              <select
-                name="roleId"
-                value={formData.roleId}
-                onChange={handleChange}
-                className="select select-bordered w-full"
-              >
-                <option value={2}>Manager</option>
-                <option value={3}>Customer</option>
-              </select>
+              <div className="space-y-2">
+                <label className="label cursor-pointer justify-start gap-3 bg-base-200 p-3 rounded-lg hover:bg-base-300">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-warning"
+                    checked={formData.roleIds?.includes(2)}
+                    onChange={() => handleRoleToggle(2)}
+                  />
+                  <span className="label-text">
+                    <span className="badge badge-warning gap-2 mr-2">
+                      Chủ sân
+                    </span>
+                    Có thể quản lý sân và đặt sân
+                  </span>
+                </label>
+                
+                <label className="label cursor-pointer justify-start gap-3 bg-base-200 p-3 rounded-lg hover:bg-base-300">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-info"
+                    checked={formData.roleIds?.includes(3)}
+                    onChange={() => handleRoleToggle(3)}
+                  />
+                  <span className="label-text">
+                    <span className="badge badge-info gap-2 mr-2">
+                      Khách hàng
+                    </span>
+                    Chỉ có thể đặt sân
+                  </span>
+                </label>
+              </div>
+              {errors.roleIds && (
+                <label className="label">
+                  <span className="label-text-alt text-error">{errors.roleIds}</span>
+                </label>
+              )}
               <label className="label">
                 <span className="label-text-alt text-base-content/60">
-                  Admin có thể thay đổi quyền giữa Manager và Customer
+                  User có thể có nhiều quyền (ví dụ: vừa là Chủ sân vừa là Khách hàng)
                 </span>
               </label>
             </div>
