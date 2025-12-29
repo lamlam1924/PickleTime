@@ -19,6 +19,14 @@ public class FacilitiesController : ControllerBase
         var facilities = await _facilityService.SearchFacilitiesAsync(keyword);
         return Ok(facilities);
     }
+
+    // Tìm kiếm nâng cao với filter và sort
+    [HttpPost("advanced-search")]
+    public async Task<ActionResult<FacilitySearchResultDto>> AdvancedSearch([FromBody] FacilitySearchFilterDto filter)
+    {
+        var result = await _facilityService.AdvancedSearchAsync(filter);
+        return Ok(result);
+    }
     
     // Lấy tất cả Facility đang hoạt động
     [HttpGet("all")]

@@ -29,7 +29,7 @@ const Home = () => {
                             Chỉ vài cú click, bạn đã có ngay sân chơi lý tưởng để thoả sức đam mê cùng bạn bè.
                         </p>
                         <Link
-                            to={"/login"}
+                            to={isLoggedIn ? "/customer/search" : "/login"}
                             className="btn btn-accent"
                         >
                             Bắt đầu ngay

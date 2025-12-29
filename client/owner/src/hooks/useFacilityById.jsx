@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "./useAxiosInstance";
+import { facilityApi } from "../services/api";
 
 const useFacilityById = (id) => {
     const [facility, setFacility] = useState(null);
@@ -8,8 +8,8 @@ const useFacilityById = (id) => {
     useEffect(() => {
         const fetchFacility = async () => {
             try {
-                const response = await axiosInstance.get(`/facilities/${id}`);
-                setFacility(response.data);
+                const data = await facilityApi.getFacilityById(id);
+                setFacility(data);
             } catch (error) {
                 console.error("Failed to fetch facility:", error);
             } finally {

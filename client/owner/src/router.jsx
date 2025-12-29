@@ -16,6 +16,10 @@ import CustomerLayout from "@layouts/CustomerLayout";
 //  all the components that are used in the owner dashboard
 import {AddTurf, OwnerBookings, OwnerDashboard, OwnerReviews, TurfManagement,} from "@components/owner";
 
+// Reservation Component
+import Reservation from "@/components/Reservation";
+import { EnhancedBookingPage } from "@/pages/EnhancedBookingPage";
+
 //  all the components that are used in the admin dashboard
 import {
     AdminDashboard,
@@ -137,9 +141,11 @@ const router = createBrowserRouter([
             </ProtectedRoute>
         ),
         children: [
-            {index: true, element: <Home/>}, // 👈 Dùng lại Home.jsx
+            {index: true, element: <Home/>},
             {path: "search", element: <Facility/>},
             {path: "turf/:id", element: <FacilityDetails/>},
+            {path: "turf/:id/booking", element: <Reservation/>},
+            {path: "booking/:id", element: <EnhancedBookingPage/>},
             {path: "become-owner", element: <BecomeOwner/>},
             {
                 path: "profile",

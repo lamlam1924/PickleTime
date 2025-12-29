@@ -1,4 +1,3 @@
-//(Response DTO)
 namespace PickleTime.Api.Application.Contracts.Owners.Dtos;
 
 public class OwnerRequestDto
@@ -7,7 +6,8 @@ public class OwnerRequestDto
     public string FullName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Phone { get; set; } = null!;
-
+    public int CreatedUserId { get; set; }
+    public int StatusId { get; set; }
     public string StatusName { get; set; } = null!;
     public DateTime SubmittedAt { get; set; }
     public DateTime? ReviewedAt { get; set; }

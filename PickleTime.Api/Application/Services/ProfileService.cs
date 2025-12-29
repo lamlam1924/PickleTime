@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PickleTime.Api.Application.Contracts.Profile;
 using PickleTime.Api.Application.Contracts.Profile.Dtos;
+using PickleTime.Api.Common.Helpers;
 using PickleTime.Api.Infrastructure.Data;
 
 namespace PickleTime.Api.Application.Services;
@@ -17,12 +18,10 @@ public class ProfileService : IProfileService
     public async Task<ProfileDto> GetProfileAsync(int userId)
     {
         var user = await _context.Users
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.UserId == userId && !u.IsDeleted);
-
-        if (user == null)
-            throw new KeyNotFoundException($"User with ID {userId} not found");
-
+                       .Include(u => u.Roles)
+                       .FirstOrDefaultAsync(u => u.UserId == userId && !u.IsDeleted)
+                   ?? throw new KeyNotFoundException($"User with ID {userId} not found");
+        
         return new ProfileDto
         {
             UserId = user.UserId,
@@ -34,7 +33,8 @@ public class ProfileService : IProfileService
             Gender = user.Gender,
             Address = user.Address,
             Avatar = user.Avatar,
-            RoleName = user.Role?.RoleName ?? "",
+            // RoleName = user.Role?.RoleName ?? "",
+            RoleName = RoleHelper.GetDisplayName(user.Roles),
             MembershipType = user.MembershipType,
             LastLogin = user.LastLogin,
             CreatedAt = user.CreatedAt,
@@ -45,7 +45,7 @@ public class ProfileService : IProfileService
     public async Task<ProfileDto> UpdateProfileAsync(int userId, UpdateProfileDto request)
     {
         var user = await _context.Users
-            .Include(u => u.Role)
+            .Include(u => u.Roles)
             .FirstOrDefaultAsync(u => u.UserId == userId && !u.IsDeleted);
 
         if (user == null)
@@ -124,8 +124,8 @@ public class ProfileService : IProfileService
     {
         var bookings = await _context.Bookings
             .Include(b => b.BookingDetails)
-                .ThenInclude(bd => bd.Court)
-                    .ThenInclude(c => c.Facility)
+            .ThenInclude(bd => bd.Court)
+            .ThenInclude(c => c.Facility)
             .Include(b => b.BookingStatus)
             .Include(b => b.PaymentStatus)
             .Where(b => b.UserId == userId && !b.IsDeleted)
@@ -172,7 +172,8 @@ public class ProfileService : IProfileService
         var completedBookings = bookings.Count(b => b.BookingStatus?.StatusName?.ToLower() == "completed");
         var cancelledBookings = bookings.Count(b => b.BookingStatus?.StatusName?.ToLower() == "cancelled");
         var pendingBookings = bookings.Count(b => b.BookingStatus?.StatusName?.ToLower() == "pending");
-        var totalSpent = bookings.Where(b => b.BookingStatus?.StatusName?.ToLower() == "completed").Sum(b => b.FinalAmount ?? b.TotalAmount);
+        var totalSpent = bookings.Where(b => b.BookingStatus?.StatusName?.ToLower() == "completed")
+            .Sum(b => b.FinalAmount ?? b.TotalAmount);
         var totalReviews = reviews.Count;
         var averageRating = totalReviews > 0 ? reviews.Average(r => (decimal?)r.Rating) : null;
 

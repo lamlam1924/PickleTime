@@ -1,5 +1,5 @@
 import { Clock, MapPin, IndianRupee, Calendar } from "lucide-react";
-import useBookingHistory from "../../hooks/useBookingHistory";
+import useBookingHistory from "../../hooks/customer/useBookingHistory";
 import useWriteReview from "../../hooks/useWriteReview";
 import TurfBookingHistorySkeleton from "../../components/ui/TurfBookingHistorySkeleton";
 import WriteReview from "../../components/reviews/WriteReview";

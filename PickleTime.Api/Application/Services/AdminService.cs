@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PickleTime.Api.Application.Contracts.Admin;
+using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Application.Contracts.Auth.Dtos;
+using PickleTime.Api.Common.Helpers;
 using PickleTime.Api.Infrastructure.Data;
 
 namespace PickleTime.Api.Application.Services
@@ -7,10 +10,12 @@ namespace PickleTime.Api.Application.Services
     public class AdminService : IAdminService
     {
         private readonly PickleTimeDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public AdminService(PickleTimeDbContext context)
+        public AdminService(PickleTimeDbContext context, IUserRepository userRepository)
         {
             _context = context;
+            _userRepository = userRepository;
         }
 
         public async Task<DashboardStatsDto> GetDashboardStatsAsync()
@@ -21,14 +26,15 @@ namespace PickleTime.Api.Application.Services
             var totalUsers = await _context.Users.CountAsync(u => !u.IsDeleted);
             var activeUsers = await _context.Users.CountAsync(u => !u.IsDeleted && u.StatusId == 1);
             var inactiveUsers = await _context.Users.CountAsync(u => !u.IsDeleted && u.StatusId == 2);
-            
-            // Count owners (RoleId = 2 for manager/owner based on your Roles table)
-            var totalOwners = await _context.Users.CountAsync(u => !u.IsDeleted && u.RoleId == 2);
 
+            // Count owners (RoleId = 2 for manager/owner based on your Roles table)
+            var totalOwners = await _context.Users
+                .Include(u => u.Roles)
+                .CountAsync(u => !u.IsDeleted && u.Roles.Any(r => r.RoleId == 2));
             // Facility statistics
             var totalFacilities = await _context.Facilities.CountAsync();
             var activeFacilities = await _context.Facilities.CountAsync(f => f.StatusId == 1);
-            
+
             // Court (Turf) statistics
             var totalTurfs = await _context.Courts.CountAsync(c => !c.IsDeleted);
 
@@ -42,7 +48,7 @@ namespace PickleTime.Api.Application.Services
             var totalRevenue = await _context.Bookings
                 .Where(b => b.PaymentStatusId == 2) // Paid
                 .SumAsync(b => (decimal?)b.TotalAmount) ?? 0;
-            
+
             var todayRevenue = await _context.Bookings
                 .Where(b => b.BookingDate == today && b.PaymentStatusId == 2)
                 .SumAsync(b => (decimal?)b.TotalAmount) ?? 0;
@@ -72,7 +78,7 @@ namespace PickleTime.Api.Application.Services
             var bookingHistoryRaw = await _context.Bookings
                 .Where(b => b.BookingDate >= startDate && b.PaymentStatusId == 2)
                 .GroupBy(b => b.BookingDate)
-                .Select(g => new 
+                .Select(g => new
                 {
                     Date = g.Key,
                     Amount = g.Sum(b => b.TotalAmount),
@@ -80,7 +86,7 @@ namespace PickleTime.Api.Application.Services
                 })
                 .OrderBy(x => x.Date)
                 .ToListAsync();
-            
+
             // Convert to DTO after query execution (client-side)
             var bookingHistory = bookingHistoryRaw.Select(x => new BookingHistoryDto
             {
@@ -95,27 +101,27 @@ namespace PickleTime.Api.Application.Services
                 TotalUsers = totalUsers,
                 ActiveUsers = activeUsers,
                 InactiveUsers = inactiveUsers,
-                
+
                 // Facility stats
                 TotalFacilities = totalFacilities,
                 ActiveFacilities = activeFacilities,
                 TotalOwners = totalOwners,
                 TotalTurfs = totalTurfs,
-                
+
                 // Booking stats
                 TotalBookings = totalBookings,
                 TodayBookings = todayBookings,
                 PendingBookings = pendingBookings,
                 CompletedBookings = completedBookings,
-                
+
                 // Revenue stats
                 TotalRevenue = totalRevenue,
                 TodayRevenue = todayRevenue,
-                
+
                 // Request stats
                 PendingRequests = pendingRequests,
                 RejectedRequests = rejectedRequests,
-                
+
                 // Recent data
                 RecentBookings = recentBookings,
                 BookingHistory = bookingHistory
@@ -124,82 +130,83 @@ namespace PickleTime.Api.Application.Services
 
         public async Task<List<OwnerListDto>> GetAllOwnersAsync()
         {
-            var owners = await _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.Status)
-                .Where(u => !u.IsDeleted && u.RoleId == 2) // RoleId = 2 for Manager/Owner
-                .Select(u => new OwnerListDto
-                {
-                    UserId = u.UserId,
-                    UserName = u.UserName,
-                    FullName = u.FullName,
-                    Email = u.Email,
-                    Phone = u.Phone,
-                    RoleName = u.Role.RoleName,
-                    StatusName = u.Status.StatusName,
-                    MembershipType = u.MembershipType,
-                    CreatedAt = u.CreatedAt,
-                    LastLogin = u.LastLogin,
-                    TotalFacilities = _context.Facilities
-                        .Count(f => f.ManagerUserId == u.UserId && !f.IsDeleted),
-                    TotalCourts = _context.Facilities
-                        .Where(f => f.ManagerUserId == u.UserId && !f.IsDeleted)
-                        .SelectMany(f => f.Courts)
-                        .Count(c => !c.IsDeleted)
-                })
-                .OrderByDescending(u => u.CreatedAt)
-                .ToListAsync();
+            var owners = await _userRepository.GetOwnersWithRolesAsync();
 
-            return owners;
+            return owners.Select(u => new OwnerListDto
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                FullName = u.FullName,
+                Email = u.Email,
+                Phone = u.Phone,
+                RoleName = RoleHelper.GetDisplayName(u.Roles),
+                StatusName = u.Status?.StatusName ?? "Unknown",
+                CreatedAt = u.CreatedAt,
+                LastLogin = u.LastLogin,
+                TotalFacilities = _context.Facilities.Count(f => f.ManagerUserId == u.UserId && !f.IsDeleted),
+                TotalCourts = _context.Facilities
+                    .Where(f => f.ManagerUserId == u.UserId && !f.IsDeleted)
+                    .SelectMany(f => f.Courts)
+                    .Count(c => !c.IsDeleted)
+            }).ToList();
         }
 
         public async Task<List<UserListDto>> GetAllUsersAsync()
         {
-            var users = await _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.Status)
-                .Where(u => !u.IsDeleted)
-                .Select(u => new UserListDto
-                {
-                    UserId = u.UserId,
-                    UserName = u.UserName,
-                    FullName = u.FullName,
-                    Email = u.Email,
-                    Phone = u.Phone,
-                    RoleName = u.Role.RoleName,
-                    StatusName = u.Status.StatusName,
-                    MembershipType = u.MembershipType,
-                    CreatedAt = u.CreatedAt,
-                    LastLogin = u.LastLogin
-                })
-                .OrderByDescending(u => u.CreatedAt)
-                .ToListAsync();
+            var users = await _userRepository.GetAllUsersWithRolesAsync();
 
-            return users;
+            return users.Select(u => new UserListDto
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                FullName = u.FullName,
+                Email = u.Email,
+                Phone = u.Phone,
+                RoleName = RoleHelper.GetPrimaryRoleName(u.Roles),
+                Roles = u.Roles.Select(r => new RoleDto
+                {
+                    RoleId = r.RoleId,
+                    RoleName = r.RoleName,
+                    DisplayName = RoleHelper.GetDisplayName(r.RoleId)
+                }).ToList(),
+                StatusName = u.Status?.StatusName ?? "Unknown",
+                StatusId = u.StatusId,
+                CreatedAt = u.CreatedAt,
+                LastLogin = u.LastLogin
+            }).ToList();
         }
+
 
         public async Task<UserListDto?> GetUserByIdAsync(int userId)
         {
             var user = await _context.Users
-                .Include(u => u.Role)
+                .Include(u => u.Roles)
                 .Include(u => u.Status)
                 .Where(u => !u.IsDeleted && u.UserId == userId)
-                .Select(u => new UserListDto
-                {
-                    UserId = u.UserId,
-                    UserName = u.UserName,
-                    FullName = u.FullName,
-                    Email = u.Email,
-                    Phone = u.Phone,
-                    RoleName = u.Role.RoleName,
-                    StatusName = u.Status.StatusName,
-                    MembershipType = u.MembershipType,
-                    CreatedAt = u.CreatedAt,
-                    LastLogin = u.LastLogin
-                })
                 .FirstOrDefaultAsync();
 
-            return user;
+            if (user == null) return null;
+
+            return new UserListDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                FullName = user.FullName,
+                Email = user.Email,
+                Phone = user.Phone,
+                RoleName = RoleHelper.GetPrimaryRoleName(user.Roles),
+                Roles = user.Roles.Select(r => new RoleDto
+                {
+                    RoleId = r.RoleId,
+                    RoleName = r.RoleName,
+                    DisplayName = RoleHelper.GetDisplayName(r.RoleId)
+                }).ToList(),
+                StatusName = user.Status?.StatusName ?? "Unknown",
+                StatusId = user.StatusId,
+                MembershipType = user.MembershipType,
+                CreatedAt = user.CreatedAt,
+                LastLogin = user.LastLogin
+            };
         }
 
         public async Task<bool> UpdateUserStatusAsync(int userId, int statusId)
@@ -218,8 +225,11 @@ namespace PickleTime.Api.Application.Services
 
         public async Task<bool> UpdateUserAsync(int userId, UpdateUserDto dto)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null || user.IsDeleted)
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.UserId == userId && !u.IsDeleted);
+                
+            if (user == null)
             {
                 return false;
             }
@@ -239,8 +249,32 @@ namespace PickleTime.Api.Application.Services
             if (!string.IsNullOrEmpty(dto.MembershipType))
                 user.MembershipType = dto.MembershipType;
 
-            if (dto.RoleId.HasValue)
-                user.RoleId = dto.RoleId.Value;
+            // Handle multiple roles update
+            if (dto.RoleIds != null && dto.RoleIds.Any())
+            {
+                // Clear existing roles
+                user.Roles.Clear();
+                
+                // Add new roles
+                foreach (var roleId in dto.RoleIds)
+                {
+                    var role = await _context.Roles.FindAsync(roleId);
+                    if (role != null)
+                    {
+                        user.Roles.Add(role);
+                    }
+                }
+            }
+            // Backward compatibility: single RoleId
+            else if (dto.RoleId.HasValue)
+            {
+                user.Roles.Clear();
+                var role = await _context.Roles.FindAsync(dto.RoleId.Value);
+                if (role != null)
+                {
+                    user.Roles.Add(role);
+                }
+            }
 
             if (dto.StatusId.HasValue)
                 user.StatusId = dto.StatusId.Value;
@@ -267,7 +301,7 @@ namespace PickleTime.Api.Application.Services
         public async Task<List<UserListDto>> GetDeletedUsersAsync()
         {
             var deletedUsers = await _context.Users
-                .Include(u => u.Role)
+                .Include(u => u.Roles)
                 .Include(u => u.Status)
                 .Where(u => u.IsDeleted)
                 .Select(u => new UserListDto
@@ -277,7 +311,7 @@ namespace PickleTime.Api.Application.Services
                     FullName = u.FullName,
                     Email = u.Email,
                     Phone = u.Phone,
-                    RoleName = u.Role.RoleName,
+                    RoleName = RoleHelper.GetDisplayName(u.Roles),
                     StatusName = u.Status.StatusName,
                     MembershipType = u.MembershipType,
                     CreatedAt = u.CreatedAt,
@@ -304,4 +338,3 @@ namespace PickleTime.Api.Application.Services
         }
     }
 }
-

@@ -74,35 +74,38 @@ const useTimeSelection = (
     const date = format(currentSelectedDate, "yyyy-MM-dd");
 
     try {
+      // Use new booking API endpoint
       const response = await axiosInstance.get(
-        `/api/user/turf/timeslot?date=${date}&turfId=${turfId}`
+        `/bookings/available-slots?facilityId=${turfId}&date=${date}`
       );
-      const result = await response.data;
-      setTimeSlots(result.timeSlots);
-      setPricePerHour(result.timeSlots.pricePerHour);
-
-      const formattedBookedTime = result.bookedTime.map((booking) => ({
-        ...booking,
-        startTime: format(
-          addMinutes(
-            parseISO(booking.startTime),
-            parseISO(booking.startTime).getTimezoneOffset()
-          ),
-          "hh:mm a",
-          { timeZone: "UTC" }
-        ),
-        endTime: format(
-          addMinutes(
-            parseISO(booking.endTime),
-            parseISO(booking.endTime).getTimezoneOffset()
-          ),
-          "hh:mm a",
-          { timeZone: "UTC" }
-        ),
-      }));
-      setBookedTime(formattedBookedTime);
+      const result = response.data || response;
+      
+      // Map new API response to old format for backward compatibility
+      if (result.slots && result.slots.length > 0) {
+        const firstSlot = result.slots[0];
+        const facility = {
+          openTime: "06:00 AM", // Default, should get from facility API
+          closeTime: "10:00 PM",
+          pricePerHour: firstSlot.price || 100000
+        };
+        setTimeSlots(facility);
+        setPricePerHour(firstSlot.price || 100000);
+        
+        // Map booked times from available slots (inverse logic)
+        // For now, set empty as we only get available slots
+        setBookedTime([]);
+      } else {
+        // No slots available
+        setTimeSlots({ openTime: "06:00 AM", closeTime: "10:00 PM", pricePerHour: 100000 });
+        setPricePerHour(100000);
+        setBookedTime([]);
+      }
     } catch (error) {
       console.log("Error in fetchByDate", error.message);
+      // Set defaults on error
+      setTimeSlots({ openTime: "06:00 AM", closeTime: "10:00 PM", pricePerHour: 100000 });
+      setPricePerHour(100000);
+      setBookedTime([]);
     }
   };
 

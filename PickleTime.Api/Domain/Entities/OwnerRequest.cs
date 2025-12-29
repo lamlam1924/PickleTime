@@ -21,8 +21,6 @@ public partial class OwnerRequest
 
     public int? ReviewedBy { get; set; }
 
-    public string? AdminNote { get; set; }
-
     public int? CreatedUserId { get; set; }
 
     public virtual User? CreatedUser { get; set; }

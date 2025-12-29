@@ -10,6 +10,11 @@ public interface IFacilityService
     Task<IEnumerable<FacilityDto>> SearchFacilitiesAsync(string keyword);
 
     /// <summary>
+    /// Tìm kiếm nâng cao với filter và sort.
+    /// </summary>
+    Task<FacilitySearchResultDto> AdvancedSearchAsync(FacilitySearchFilterDto filter);
+
+    /// <summary>
     /// Lấy danh sách tất cả Facility.
     /// </summary>
     Task<IEnumerable<FacilityDto>> GetAllAsync();

@@ -1,8 +1,11 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PickleTime.Api.Application.Contract.Auth.Dto;
 using PickleTime.Api.Application.Contracts.Auth;
 using PickleTime.Api.Application.Contracts.Auth.Dtos;
+using PickleTime.Api.Common.Exceptions;
 
 namespace PickleTime.Api.Controllers;
 
@@ -11,10 +14,12 @@ namespace PickleTime.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IRoleSwitchService _roleSwitchService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IRoleSwitchService roleSwitchService)
     {
         _authService = authService;
+        _roleSwitchService = roleSwitchService;
     }
 
     [HttpPost("login")]
@@ -45,15 +50,15 @@ public class AuthController : ControllerBase
         var clientId = "32187435926-56kge5ab9q02ou9ic2uv658h6uf0e4ep.apps.googleusercontent.com";
         var redirectUri = "http://localhost:5104/signin-google";
         var scope = "openid profile email";
-        
+
         var googleAuthUrl = $"https://accounts.google.com/o/oauth2/v2/auth?" +
-            $"client_id={Uri.EscapeDataString(clientId)}&" +
-            $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
-            $"response_type=code&" +
-            $"scope={Uri.EscapeDataString(scope)}&" +
-            $"access_type=offline&" +
-            $"prompt=select_account";
-        
+                            $"client_id={Uri.EscapeDataString(clientId)}&" +
+                            $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+                            $"response_type=code&" +
+                            $"scope={Uri.EscapeDataString(scope)}&" +
+                            $"access_type=offline&" +
+                            $"prompt=select_account";
+
         return Redirect(googleAuthUrl);
     }
 
@@ -62,12 +67,12 @@ public class AuthController : ControllerBase
     {
         if (!string.IsNullOrEmpty(error))
         {
-            return Redirect($"http://localhost:5173/login?error={Uri.EscapeDataString(error)}");
+            return Redirect($"http://localhost:5174/login?error={Uri.EscapeDataString(error)}");
         }
 
         if (string.IsNullOrEmpty(code))
         {
-            return Redirect("http://localhost:5173/login?error=no_authorization_code");
+            return Redirect("http://localhost:5174/login?error=no_authorization_code");
         }
 
         try
@@ -97,7 +102,7 @@ public class AuthController : ControllerBase
 
             if (!tokenData.ContainsKey("id_token"))
             {
-                return Redirect("http://localhost:5173/login?error=no_id_token");
+                return Redirect("http://localhost:5174/login?error=no_id_token");
             }
 
             var idToken = tokenData["id_token"].ToString();
@@ -105,20 +110,25 @@ public class AuthController : ControllerBase
             // Verify and use the ID token
             var request = new GoogleLoginRequestDto { Credential = idToken };
             var result = await _authService.GoogleLoginAsync(request);
-            
+            var rolesJson = Uri.EscapeDataString(
+                System.Text.Json.JsonSerializer.Serialize(result.Roles)
+            );
             // Redirect to frontend with all user info
-            return Redirect($"http://localhost:5173/auth/google-success?" +
-                $"token={result.Token}&" +
-                $"role={Uri.EscapeDataString(result.Role)}&" +
-                $"userId={result.UserId}&" +
-                $"email={Uri.EscapeDataString(result.Email)}&" +
-                $"userName={Uri.EscapeDataString(result.UserName)}&" +
-                $"fullName={Uri.EscapeDataString(result.FullName)}");
+            var redirectUrl = ($"http://localhost:5174/auth/google-success?" +
+                               $"token={result.Token}&" +
+                               // $"role={Uri.EscapeDataString(result.Role)}&" +
+                               $"userId={result.UserId}&" +
+                               $"email={Uri.EscapeDataString(result.Email)}&" +
+                               $"userName={Uri.EscapeDataString(result.UserName)}&" +
+                               $"fullName={Uri.EscapeDataString(result.FullName)}&") +
+                              $"roles={rolesJson}&" +
+                              $"hasMultipleRoles={result.HasMultipleRoles}";
+            return Redirect(redirectUrl);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Google callback error: {ex.Message}");
-            return Redirect($"http://localhost:5173/login?error={Uri.EscapeDataString(ex.Message)}");
+            return Redirect($"http://localhost:5174/login?error={Uri.EscapeDataString(ex.Message)}");
         }
     }
 
@@ -188,17 +198,35 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+    [Authorize]
+    [HttpPost("select-role")]
+    public async Task<IActionResult> SelectRole([FromBody] SelectRoleRequest request)
     {
         try
         {
-            var result = await _authService.RegisterAsync(request);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                              ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                              ?? throw new UnauthorizedAccessException("User ID claim not found");
+
+            var userId = int.Parse(userIdClaim);
+
+            Console.WriteLine($"[SelectRole] UserId from token: {userId}, Requested roleId: {request.RoleId}");
+
+            var result = await _roleSwitchService.SwitchRoleAsync(userId, request.RoleId);
             return Ok(result);
         }
-        catch (ArgumentException ex)
+        catch (ForbidException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(403, new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SelectRole] Error: {ex.Message}");
+            return StatusCode(500, new { message = "An error occurred while switching role", details = ex.Message });
         }
     }
 }

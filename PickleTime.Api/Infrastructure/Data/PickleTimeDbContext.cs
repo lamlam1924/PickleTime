@@ -7,14 +7,12 @@ namespace PickleTime.Api.Infrastructure.Data;
 
 public partial class PickleTimeDbContext : DbContext
 {
-    public PickleTimeDbContext()
-    {
-    }
-
     public PickleTimeDbContext(DbContextOptions<PickleTimeDbContext> options)
         : base(options)
     {
     }
+
+    public virtual DbSet<Amenity> Amenities { get; set; }
 
     public virtual DbSet<Booking> Bookings { get; set; }
 
@@ -42,11 +40,19 @@ public partial class PickleTimeDbContext : DbContext
 
     public virtual DbSet<Facility> Facilities { get; set; }
 
+    public virtual DbSet<FacilityAmenity> FacilityAmenities { get; set; }
+
     public virtual DbSet<FacilityImage> FacilityImages { get; set; }
 
     public virtual DbSet<FacilityOperatingHour> FacilityOperatingHours { get; set; }
 
     public virtual DbSet<FacilityStatus> FacilityStatuses { get; set; }
+
+    public virtual DbSet<Notification> Notifications { get; set; }
+
+    public virtual DbSet<NotificationStatus> NotificationStatuses { get; set; }
+
+    public virtual DbSet<NotificationType> NotificationTypes { get; set; }
 
     public virtual DbSet<OwnerRequest> OwnerRequests { get; set; }
 
@@ -78,11 +84,23 @@ public partial class PickleTimeDbContext : DbContext
 
     public virtual DbSet<UserStatus> UserStatuses { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Amenity>(entity =>
+        {
+            entity.HasKey(e => e.AmenityId).HasName("PK__Amenitie__842AF52BCFDC2168");
+
+            entity.HasIndex(e => e.AmenityCode, "UQ__Amenitie__300F6CA363B83F95").IsUnique();
+
+            entity.Property(e => e.AmenityId).HasColumnName("AmenityID");
+            entity.Property(e => e.AmenityCode)
+                .HasMaxLength(30)
+                .IsUnicode(false);
+            entity.Property(e => e.AmenityName).HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+        });
+
         modelBuilder.Entity<Booking>(entity =>
         {
             entity.HasKey(e => e.BookingId).HasName("PK__Bookings__73951ACD1F3DE4FC");
@@ -378,6 +396,27 @@ public partial class PickleTimeDbContext : DbContext
                 .HasConstraintName("FK__Facilitie__Statu__6D0D32F4");
         });
 
+        modelBuilder.Entity<FacilityAmenity>(entity =>
+        {
+            entity.HasKey(e => new { e.FacilityId, e.AmenityId }).HasName("PK__Facility__F7F224C65A246F97");
+
+            entity.Property(e => e.FacilityId).HasColumnName("FacilityID");
+            entity.Property(e => e.AmenityId).HasColumnName("AmenityID");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Amenity).WithMany(p => p.FacilityAmenities)
+                .HasForeignKey(d => d.AmenityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FacilityA__Ameni__00AA174D");
+
+            entity.HasOne(d => d.Facility).WithMany(p => p.FacilityAmenities)
+                .HasForeignKey(d => d.FacilityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FacilityA__Facil__7FB5F314");
+        });
+
         modelBuilder.Entity<FacilityImage>(entity =>
         {
             entity.HasKey(e => e.ImageId).HasName("PK__Facility__7516F70C568D5AAB");
@@ -416,11 +455,60 @@ public partial class PickleTimeDbContext : DbContext
             entity.Property(e => e.StatusName).HasMaxLength(20);
         });
 
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Notifica__3214EC07CDF254AB");
+
+            entity.HasIndex(e => e.CreatedAt, "IX_Notifications_CreatedAt_DESC").IsDescending();
+
+            entity.HasIndex(e => e.TypeId, "IX_Notifications_TypeId");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Message).HasMaxLength(500);
+            entity.Property(e => e.Title).HasMaxLength(255);
+
+            entity.HasOne(d => d.Type).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.TypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notifications_Type");
+        });
+
+        modelBuilder.Entity<NotificationStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Notifica__3214EC0776A789F3");
+
+            entity.HasIndex(e => e.NotificationId, "IX_Status_NotificationId");
+
+            entity.HasIndex(e => new { e.UserId, e.IsRead }, "IX_Status_User_Read").IsDescending(false, true);
+
+            entity.HasIndex(e => new { e.NotificationId, e.UserId }, "UQ_Notification_User").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.Notification).WithMany(p => p.NotificationStatuses)
+                .HasForeignKey(d => d.NotificationId)
+                .HasConstraintName("FK_Status_Notification");
+
+            entity.HasOne(d => d.User).WithMany(p => p.NotificationStatuses)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_Status_User");
+        });
+
+        modelBuilder.Entity<NotificationType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Notifica__3214EC07908CE65F");
+
+            entity.HasIndex(e => e.Name, "UQ__Notifica__737584F610EF6269").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+
         modelBuilder.Entity<OwnerRequest>(entity =>
         {
             entity.HasKey(e => e.RequestId).HasName("PK__OwnerReq__33A8517A6F4B6E60");
 
-            entity.Property(e => e.AdminNote).HasMaxLength(500);
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(20);
@@ -700,27 +788,39 @@ public partial class PickleTimeDbContext : DbContext
             entity.Property(e => e.PassWord).HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.ResetToken)
-                .HasMaxLength(10)
+                .HasMaxLength(100)
                 .HasColumnName("Reset_Token");
             entity.Property(e => e.ResetTokenExpiry)
                 .HasColumnType("datetime")
                 .HasColumnName("Reset_Token_Expiry");
-            entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.StatusId).HasColumnName("StatusID");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.UserName).HasMaxLength(50);
 
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Users__RoleID__619B8048");
-
             entity.HasOne(d => d.Status).WithMany(p => p.Users)
                 .HasForeignKey(d => d.StatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__StatusID__628FA481");
+
+            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserRole",
+                    r => r.HasOne<Role>().WithMany()
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("FK__UserRoles__RoleI__603D47BB"),
+                    l => l.HasOne<User>().WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK__UserRoles__UserI__5F492382"),
+                    j =>
+                    {
+                        j.HasKey("UserId", "RoleId").HasName("PK__UserRole__AF27604F1DFF7CDD");
+                        j.ToTable("UserRoles");
+                        j.HasIndex(new[] { "RoleId" }, "IX_UserRoles_RoleID");
+                        j.IndexerProperty<int>("UserId").HasColumnName("UserID");
+                        j.IndexerProperty<int>("RoleId").HasColumnName("RoleID");
+                    });
         });
 
         modelBuilder.Entity<UserStatus>(entity =>

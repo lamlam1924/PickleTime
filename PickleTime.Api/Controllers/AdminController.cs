@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PickleTime.Api.Application.Contracts.Admin;
+using PickleTime.Api.Application.Contracts.Auth.Dtos;
 
 namespace PickleTime.Api.Controllers
 {
@@ -106,7 +107,7 @@ namespace PickleTime.Api.Controllers
         /// Update user status (active/inactive)
         /// </summary>
         [HttpPut("users/{id}/status")]
-        public async Task<IActionResult> UpdateUserStatus(int id, [FromBody] UpdateUserStatusDto dto)
+        public async Task<IActionResult> UpdateUserStatus(int id, [FromBody] Application.Contracts.Admin.UpdateUserStatusDto dto)
         {
             try
             {

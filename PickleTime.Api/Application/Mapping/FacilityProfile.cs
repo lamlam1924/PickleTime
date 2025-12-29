@@ -33,18 +33,28 @@ public class FacilityProfile : Profile
 
         CreateMap<Facility, FacilityDetailDto>()
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName))
-            .ForMember(dest => dest.FacilityImages, opt => opt.MapFrom(src => src.FacilityImages.Select(img => img.ImageUrl)))
-            .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => src.Courts))
-            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews.Where(r => !r.IsDeleted && r.ReviewStatus.StatusName == "Approved")))
+            .ForMember(dest => dest.FacilityImages, opt => opt.MapFrom(src => 
+                src.FacilityImages.Where(img => !img.IsDeleted).OrderBy(img => img.DisplayOrder)))
+            .ForMember(dest => dest.Amenities, opt => opt.MapFrom(src => 
+                src.FacilityAmenities.Where(fa => fa.Amenity.IsActive).Select(fa => fa.Amenity)))
+            .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => 
+                src.Courts.Where(c => !c.IsDeleted)))
+            .ForMember(dest => dest.OperatingHours, opt => opt.MapFrom(src => 
+                src.FacilityOperatingHours.OrderBy(oh => oh.DayOfWeek)))
+            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => 
+                src.Reviews.Where(r => !r.IsDeleted && r.ReviewStatus.StatusName == "Approved")))
             .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src =>
                 src.Reviews.Where(r => !r.IsDeleted && r.ReviewStatus.StatusName == "Approved").Any()
                     ? src.Reviews.Where(r => !r.IsDeleted && r.ReviewStatus.StatusName == "Approved").Average(r => r.Rating)
                     : 0
             ));
 
-        CreateMap<FacilityImage, FacilityImageDto>();
+        CreateMap<FacilityImage, FacilityImageDto>()
+            .ForMember(dest => dest.CourtImage, opt => opt.MapFrom(src => src.CourtImage));
         
         CreateMap<CourtImage, CourtImageDto>();
+        
+        CreateMap<Amenity, AmenityDto>();
         
         CreateMap<FacilityOperatingHour, FacilityOperatingHourDto>();
 

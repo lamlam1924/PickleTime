@@ -25,8 +25,6 @@ public partial class Facility
 
     public string? Description { get; set; }
 
-    public string? Amenities { get; set; }
-
     public int StatusId { get; set; }
 
     public decimal? Rating { get; set; }
@@ -44,6 +42,8 @@ public partial class Facility
     public bool IsDeleted { get; set; }
 
     public virtual ICollection<Court> Courts { get; set; } = new List<Court>();
+
+    public virtual ICollection<FacilityAmenity> FacilityAmenities { get; set; } = new List<FacilityAmenity>();
 
     public virtual ICollection<FacilityImage> FacilityImages { get; set; } = new List<FacilityImage>();
 

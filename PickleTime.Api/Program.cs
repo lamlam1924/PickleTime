@@ -1,13 +1,16 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PickleTime.Api.Application.Contracts.Admin;
 using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Application.Contracts.Bookings;
 using PickleTime.Api.Application.Contracts.Facilities;
 using PickleTime.Api.Application.Contracts.Files;
 using PickleTime.Api.Application.Contracts.Images;
+using PickleTime.Api.Application.Contracts.Notifications;
 using PickleTime.Api.Application.Contracts.OwnerProfile;
 using PickleTime.Api.Application.Contracts.Owners;
 using PickleTime.Api.Application.Contracts.Profile;
@@ -15,13 +18,12 @@ using PickleTime.Api.Application.Contracts.Reviews;
 using PickleTime.Api.Application.Contracts.Roles;
 using PickleTime.Api.Application.Mapping;
 using PickleTime.Api.Application.Services;
-using PickleTime.Api.Common.Helpers;
+using PickleTime.Api.Hubs;
 using PickleTime.Api.Infrastructure.Data;
 using PickleTime.Api.Infrastructure.Repositories;
-using PickleTime.Api.Infrastructure.Repositories.Bookings;
 
 // Clear default claim type mapping
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+// JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +31,11 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Add services to DI container
 // =============================================================
 // Đăng ký DbContext (EF Core, Database First)
+// Program.cs hoặc Startup.cs
 builder.Services.AddDbContext<PickleTimeDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 // Đăng ký Repository
 builder.Services.AddScoped<ICourtImageRepository, CourtImageRepository>();
 builder.Services.AddScoped<IFacilityRepository, FacilityRepository>();
@@ -39,6 +43,7 @@ builder.Services.AddScoped<IFacilityImageRepository, FacilityImageRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IOwnerRequestRepository, OwnerRequestRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 //Đăng ký Service
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -53,10 +58,14 @@ builder.Services.AddScoped<IFacilityService, FacilityService>();
 builder.Services.AddScoped<IFacilityImageService, FacilityImageService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IOwnerRequestService, OwnerRequestService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IRoleSwitchService, RoleSwitchService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 // Đăng ký AutoMapper
 builder.Services.AddAutoMapper(typeof(FacilityProfile));
 builder.Services.AddAutoMapper(typeof(OwnerProfile));
+builder.Services.AddAutoMapper(typeof(NotificationProfile));
 
 // Đăng ký Cloudinary
 builder.Services.Configure<CloudinarySettings>(
@@ -67,9 +76,9 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         // Convert PascalCase to camelCase for JSON responses
-        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
-    
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -77,10 +86,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy.WithOrigins("http://localhost:5174")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -88,25 +97,28 @@ builder.Services.AddCors(options =>
 // Authentication
 // =============================================================
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-{
-    var key = builder.Configuration["Jwt:Key"] ?? "";
-    options.TokenValidationParameters = new TokenValidationParameters
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-        RoleClaimType = System.Security.Claims.ClaimTypes.Role,
-        NameClaimType = System.Security.Claims.ClaimTypes.Name
-    };
-});
+        var key = builder.Configuration["Jwt:Key"] ?? "";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.NameIdentifier
+        };
+    });
 
 // Add Authorization (sẽ dùng [Authorize] ở Controller)
 builder.Services.AddAuthorization();
+
+// Đăng ký SignalR
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -130,5 +142,6 @@ app.UseAuthorization();
 
 app.MapControllers(); // ✅ dùng MapControllers thay vì UseEndpoints
 
-app.Run();
+app.MapHub<NotificationHub>("/notificationHub");
 
+app.Run();

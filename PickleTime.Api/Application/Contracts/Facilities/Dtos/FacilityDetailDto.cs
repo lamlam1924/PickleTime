@@ -14,7 +14,7 @@ public class FacilityDetailDto
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? Description { get; set; }
-    public string? Amenities { get; set; }
+    public IEnumerable<AmenityDto> Amenities { get; set; } = new List<AmenityDto>();
     public decimal? Rating { get; set; }
     public int? TotalRatings { get; set; }
     public string StatusName { get; set; } = null!;

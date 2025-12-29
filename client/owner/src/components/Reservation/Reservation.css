@@ -1,0 +1,227 @@
+/* Modern Reservation Animations */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: currentColor;
+    opacity: 1;
+  }
+  50% {
+    border-color: transparent;
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.5s ease-out;
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Scrollbar for Modern Look */
+.modern-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Gradient Text Effect */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass Morphism Effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Success Checkmark Animation */
+@keyframes checkmark {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-checkmark {
+  animation: checkmark 0.5s ease-in-out;
+}
+
+/* Custom DatePicker Styles */
+.react-datepicker {
+  font-family: inherit !important;
+  border: none !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 1rem !important;
+}
+
+.react-datepicker__header {
+  background-color: hsl(var(--p)) !important;
+  border-bottom: none !important;
+  border-radius: 1rem 1rem 0 0 !important;
+  padding: 1rem !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: hsl(var(--pc)) !important;
+}
+
+.react-datepicker__day {
+  border-radius: 0.5rem !important;
+  transition: all 0.2s !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: hsl(var(--p) / 0.1) !important;
+  transform: scale(1.1);
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: hsl(var(--s)) !important;
+  color: hsl(var(--sc)) !important;
+  transform: scale(1.1);
+}
+
+.react-datepicker__day--disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+  .animate-fade-in {
+    animation-duration: 0.3s;
+  }
+  
+  .hover-lift:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Loading Skeleton */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-loader {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+/* Smooth Transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus Styles */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid hsl(var(--p));
+  outline-offset: 2px;
+}

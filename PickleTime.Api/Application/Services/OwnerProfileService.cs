@@ -5,30 +5,29 @@ using PickleTime.Api.Application.Contracts.Profile.Dtos;
 using PickleTime.Api.Infrastructure.Data;
 using System.Text.RegularExpressions;
 using BCrypt.Net;
+using PickleTime.Api.Application.Contracts.Auth;
+using PickleTime.Api.Common.Helpers;
 
 namespace PickleTime.Api.Application.Services
 {
     public class OwnerProfileService : IOwnerProfileService
     {
         private readonly PickleTimeDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public OwnerProfileService(PickleTimeDbContext context)
+        public OwnerProfileService(PickleTimeDbContext context, IUserRepository userRepository)
         {
             _context = context;
+            _userRepository = userRepository;
         }
 
         // ==================== Profile Management ====================
 
         public async Task<OwnerProfileDto> GetOwnerProfileAsync(int userId)
         {
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .Where(u => u.UserId == userId && !u.IsDeleted && u.RoleId == 2) // RoleId 2 = manager/owner
-                .FirstOrDefaultAsync();
-
-            if (user == null)
-                throw new KeyNotFoundException("Owner not found or access denied");
-
+            var user = await _userRepository.GetByIdWithRolesAsync(userId)
+                       ?? throw new KeyNotFoundException("Owner not found or access denied");
+            
             // Count facilities managed by this owner
             var totalFacilities = await _context.Facilities
                 .Where(f => f.ManagerUserId == userId && !f.IsDeleted)
@@ -48,7 +47,8 @@ namespace PickleTime.Api.Application.Services
                 DateOfBirth = user.DateOfBirth,
                 Gender = user.Gender,
                 Address = user.Address,
-                Role = user.Role?.RoleName ?? "Manager",
+                // Role = user.Role?.RoleName ?? "Manager",
+                Role = RoleHelper.GetDisplayName(user.Roles),
                 CreatedAt = user.CreatedAt,
                 Avatar = user.Avatar,
                 GoogleId = user.GoogleId,
@@ -61,7 +61,7 @@ namespace PickleTime.Api.Application.Services
         public async Task<OwnerProfileDto> UpdateOwnerProfileAsync(int userId, UpdateOwnerProfileDto request)
         {
             var user = await _context.Users
-                .Where(u => u.UserId == userId && !u.IsDeleted && u.RoleId == 2)
+                .Where(u => u.UserId == userId && !u.IsDeleted && u.Roles.Any(r => r.RoleId == 2))
                 .FirstOrDefaultAsync();
 
             if (user == null)
@@ -118,7 +118,7 @@ namespace PickleTime.Api.Application.Services
             // Get all bookings for owner's facilities
             var allBookings = await _context.Bookings
                 .Include(b => b.BookingDetails)
-                .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd => 
+                .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd =>
                     bd.Court != null && facilityIds.Contains(bd.Court.FacilityId)))
                 .ToListAsync();
 
@@ -129,7 +129,7 @@ namespace PickleTime.Api.Application.Services
 
             // Revenue calculations (only completed bookings with payment)
             var completedBookings = allBookings.Where(b => b.BookingStatusId == 2 && b.PaymentStatusId == 2).ToList();
-            
+
             var totalRevenue = completedBookings.Sum(b => b.FinalAmount ?? b.TotalAmount);
             var monthlyRevenue = completedBookings
                 .Where(b => b.BookingDate >= DateOnly.FromDateTime(monthStart))
@@ -176,14 +176,14 @@ namespace PickleTime.Api.Application.Services
             var lastReviewDate = reviews.Any() ? reviews.Max(r => r.ReviewDate) : (DateTime?)null;
 
             // ==================== Chart Data ====================
-            
+
             // 1. Bookings Per Facility
             var bookingsPerFacility = new List<BookingPerFacilityData>();
             foreach (var facility in facilities)
             {
                 var facilityBookings = await _context.Bookings
                     .Include(b => b.BookingDetails)
-                    .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd => 
+                    .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd =>
                         bd.Court != null && bd.Court.FacilityId == facility.FacilityId))
                     .ToListAsync();
 
@@ -199,12 +199,12 @@ namespace PickleTime.Api.Application.Services
             // 2. Revenue Over Time (Last 30 days)
             var revenueOverTime = new List<RevenueOverTimeData>();
             var startDate = DateTime.Now.AddDays(-6).Date; // Last 7 days including today
-            
+
             for (int i = 0; i < 7; i++)
             {
                 var targetDate = startDate.AddDays(i);
                 var targetDateOnly = DateOnly.FromDateTime(targetDate);
-                
+
                 var dayBookings = completedBookings
                     .Where(b => b.BookingDate == targetDateOnly)
                     .ToList();
@@ -256,7 +256,7 @@ namespace PickleTime.Api.Application.Services
             foreach (var facility in facilities)
             {
                 var facilityId = facility.FacilityId;
-                
+
                 // Get courts for this facility
                 var courts = facility.Courts.Where(c => !c.IsDeleted).ToList();
                 var activeCourts = courts.Count(c => c.StatusId == 1);
@@ -264,7 +264,7 @@ namespace PickleTime.Api.Application.Services
                 // Get bookings for this facility
                 var bookings = await _context.Bookings
                     .Include(b => b.BookingDetails)
-                    .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd => 
+                    .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd =>
                         bd.Court != null && bd.Court.FacilityId == facilityId))
                     .ToListAsync();
 
@@ -319,7 +319,7 @@ namespace PickleTime.Api.Application.Services
 
             var bookings = await _context.Bookings
                 .Include(b => b.BookingDetails)
-                .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd => 
+                .Where(b => !b.IsDeleted && b.BookingDetails.Any(bd =>
                     bd.Court != null && bd.Court.FacilityId == facilityId))
                 .ToListAsync();
 
@@ -372,10 +372,10 @@ namespace PickleTime.Api.Application.Services
                 .Include(b => b.BookingStatus)
                 .Include(b => b.PaymentStatus)
                 .Include(b => b.BookingDetails)
-                    .ThenInclude(bd => bd.Court)
-                    .ThenInclude(c => c!.Facility)
-                .Where(b => !b.IsDeleted && 
-                       b.BookingDetails.Any(bd => bd.Court != null && facilityIds.Contains(bd.Court.FacilityId)))
+                .ThenInclude(bd => bd.Court)
+                .ThenInclude(c => c!.Facility)
+                .Where(b => !b.IsDeleted &&
+                            b.BookingDetails.Any(bd => bd.Court != null && facilityIds.Contains(bd.Court.FacilityId)))
                 .OrderByDescending(b => b.BookingDate)
                 .ToListAsync();
 
@@ -428,10 +428,10 @@ namespace PickleTime.Api.Application.Services
 
             var bookings = await _context.Bookings
                 .Include(b => b.BookingDetails)
-                .Where(b => !b.IsDeleted && 
-                       b.BookingStatusId == 2 && 
-                       b.PaymentStatusId == 2 &&
-                       b.BookingDetails.Any(bd => bd.Court != null && facilityIds.Contains(bd.Court.FacilityId)))
+                .Where(b => !b.IsDeleted &&
+                            b.BookingStatusId == 2 &&
+                            b.PaymentStatusId == 2 &&
+                            b.BookingDetails.Any(bd => bd.Court != null && facilityIds.Contains(bd.Court.FacilityId)))
                 .ToListAsync();
 
             var result = new List<OwnerRevenueDto>();
@@ -447,7 +447,7 @@ namespace PickleTime.Api.Application.Services
                 {
                     var bookingsList = group.ToList();
                     var revenue = bookingsList.Sum(b => b.FinalAmount ?? b.TotalAmount);
-                    
+
                     result.Add(new OwnerRevenueDto
                     {
                         Period = $"{group.Key.Year}-{group.Key.Month:D2}",
@@ -469,7 +469,7 @@ namespace PickleTime.Api.Application.Services
                 {
                     var bookingsList = group.ToList();
                     var revenue = bookingsList.Sum(b => b.FinalAmount ?? b.TotalAmount);
-                    
+
                     result.Add(new OwnerRevenueDto
                     {
                         Period = group.Key.ToString("yyyy-MM-dd"),
@@ -486,7 +486,8 @@ namespace PickleTime.Api.Application.Services
 
         // ==================== Reviews Management ====================
 
-        public async Task<List<FacilityReviewDto>> GetFacilityReviewsAsync(int userId, int? facilityId = null, int page = 1, int pageSize = 10)
+        public async Task<List<FacilityReviewDto>> GetFacilityReviewsAsync(int userId, int? facilityId = null,
+            int page = 1, int pageSize = 10)
         {
             var facilityIds = await _context.Facilities
                 .Where(f => f.ManagerUserId == userId && !f.IsDeleted)
@@ -531,12 +532,8 @@ namespace PickleTime.Api.Application.Services
 
         public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDto request)
         {
-            var user = await _context.Users
-                .Where(u => u.UserId == userId && !u.IsDeleted && u.RoleId == 2)
-                .FirstOrDefaultAsync();
-
-            if (user == null)
-                throw new KeyNotFoundException("Owner not found");
+            var user = await _userRepository.GetByIdWithRolesAsync(userId)
+                       ?? throw new KeyNotFoundException("Owner not found");
 
             // Check if user logged in with Google
             if (!string.IsNullOrEmpty(user.GoogleId))

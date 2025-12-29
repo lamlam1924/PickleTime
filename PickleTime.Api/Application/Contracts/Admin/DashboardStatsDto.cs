@@ -49,20 +49,6 @@ namespace PickleTime.Api.Application.Contracts.Admin
         public int Count { get; set; }
     }
 
-    public class UserListDto
-    {
-        public int UserId { get; set; }
-        public string UserName { get; set; } = null!;
-        public string FullName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string? Phone { get; set; }
-        public string RoleName { get; set; } = null!;
-        public string StatusName { get; set; } = null!;
-        public string? MembershipType { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? LastLogin { get; set; }
-    }
-
     public class OwnerListDto
     {
         public int UserId { get; set; }
@@ -82,17 +68,6 @@ namespace PickleTime.Api.Application.Contracts.Admin
     public class UpdateUserStatusDto
     {
         public int StatusId { get; set; }
-    }
-
-    public class UpdateUserDto
-    {
-        public string? FullName { get; set; }
-        public string? Email { get; set; }
-        public string? Phone { get; set; }
-        public string? Address { get; set; }
-        public string? MembershipType { get; set; }
-        public int? RoleId { get; set; }
-        public int? StatusId { get; set; }
     }
 }
 

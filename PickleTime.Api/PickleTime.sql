@@ -21,75 +21,87 @@ GO
 * SECTION 1: LOOKUP TABLES - Create these first
 *******************************************************************************/
 -- Create all status and reference tables
-CREATE TABLE Roles (
-                       RoleID INT PRIMARY KEY IDENTITY(1,1),
-                       RoleName NVARCHAR(50) NOT NULL UNIQUE
+CREATE TABLE Roles
+(
+    RoleID   INT PRIMARY KEY IDENTITY (1,1),
+    RoleName NVARCHAR(50) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE UserStatuses (
-                              StatusID INT PRIMARY KEY IDENTITY(1,1),
-                              StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE UserStatuses
+(
+    StatusID   INT PRIMARY KEY IDENTITY (1,1),
+    StatusName NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE FacilityStatuses (
-                                  StatusID INT PRIMARY KEY IDENTITY(1,1),
-                                  StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE FacilityStatuses
+(
+    StatusID   INT PRIMARY KEY IDENTITY (1,1),
+    StatusName NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE CourtStatuses (
-                               StatusID INT PRIMARY KEY IDENTITY(1,1),
-                               StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE CourtStatuses
+(
+    StatusID   INT PRIMARY KEY IDENTITY (1,1),
+    StatusName NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE CourtTypes (
-                            TypeID INT PRIMARY KEY IDENTITY(1,1),
-                            TypeName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE CourtTypes
+(
+    TypeID   INT PRIMARY KEY IDENTITY (1,1),
+    TypeName NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE CourtSurfaces (
-                               SurfaceID INT PRIMARY KEY IDENTITY(1,1),
-                               SurfaceName NVARCHAR(30) NOT NULL UNIQUE
+CREATE TABLE CourtSurfaces
+(
+    SurfaceID   INT PRIMARY KEY IDENTITY (1,1),
+    SurfaceName NVARCHAR(30) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE TimeSlotStatuses (
-                                  TimeSlotStatusID INT PRIMARY KEY IDENTITY(1,1),
-                                  StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE TimeSlotStatuses
+(
+    TimeSlotStatusID INT PRIMARY KEY IDENTITY (1,1),
+    StatusName       NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE BookingStatuses (
-                                 BookingStatusID INT PRIMARY KEY IDENTITY(1,1),
-                                 StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE BookingStatuses
+(
+    BookingStatusID INT PRIMARY KEY IDENTITY (1,1),
+    StatusName      NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE PaymentStatuses (
-                                 PaymentStatusID INT PRIMARY KEY IDENTITY(1,1),
-                                 StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE PaymentStatuses
+(
+    PaymentStatusID INT PRIMARY KEY IDENTITY (1,1),
+    StatusName      NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE PromotionStatuses (
-                                   PromotionStatusID INT PRIMARY KEY IDENTITY(1,1),
-                                   StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE PromotionStatuses
+(
+    PromotionStatusID INT PRIMARY KEY IDENTITY (1,1),
+    StatusName        NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE ReviewStatuses (
-                                ReviewStatusID INT PRIMARY KEY IDENTITY(1,1),
-                                StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE ReviewStatuses
+(
+    ReviewStatusID INT PRIMARY KEY IDENTITY (1,1),
+    StatusName     NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
-CREATE TABLE BookingHoldStatuses (
-                                     BookingHoldStatusID INT PRIMARY KEY IDENTITY(1,1),
-                                     StatusName NVARCHAR(20) NOT NULL UNIQUE
+CREATE TABLE BookingHoldStatuses
+(
+    BookingHoldStatusID INT PRIMARY KEY IDENTITY (1,1),
+    StatusName          NVARCHAR(20) NOT NULL UNIQUE
 );
 GO
 
@@ -97,341 +109,388 @@ GO
 * SECTION 2: INSERT LOOKUP DATA
 *******************************************************************************/
 -- Insert all reference data
-INSERT INTO Roles (RoleName) VALUES 
-    ('admin'), ('manager'), ('customer');
+INSERT INTO Roles (RoleName)
+VALUES ('admin'),
+       ('manager'),
+       ('customer');
 GO
 
-INSERT INTO UserStatuses (StatusName) VALUES 
-    ('active'), ('inactive'), ('pending'), ('banned');
+INSERT INTO UserStatuses (StatusName)
+VALUES ('active'),
+       ('inactive'),
+       ('pending'),
+       ('banned');
 GO
 
-INSERT INTO FacilityStatuses (StatusName) VALUES 
-    ('active'), ('inactive'), ('maintenance');
+INSERT INTO FacilityStatuses (StatusName)
+VALUES ('active'),
+       ('inactive'),
+       ('maintenance');
 GO
 
-INSERT INTO CourtStatuses (StatusName) VALUES 
-    ('available'), ('maintenance'), ('closed');
+INSERT INTO CourtStatuses (StatusName)
+VALUES ('available'),
+       ('maintenance'),
+       ('closed');
 GO
 
-INSERT INTO CourtTypes (TypeName) VALUES 
-    ('Standard'), ('Premium'), ('VIP');
+INSERT INTO CourtTypes (TypeName)
+VALUES ('Standard'),
+       ('Premium'),
+       ('VIP');
 GO
 
-INSERT INTO CourtSurfaces (SurfaceName) VALUES 
-    ('Synthetic'), ('Concrete'), ('Wood');
+INSERT INTO CourtSurfaces (SurfaceName)
+VALUES ('Synthetic'),
+       ('Concrete'),
+       ('Wood');
 GO
 
-INSERT INTO TimeSlotStatuses (StatusName) VALUES 
-    ('available'), ('booked'), ('blocked'), ('maintenance');
+INSERT INTO TimeSlotStatuses (StatusName)
+VALUES ('available'),
+       ('booked'),
+       ('blocked'),
+       ('maintenance');
 GO
 
-INSERT INTO BookingStatuses (StatusName) VALUES 
-    ('pending'), ('confirmed'), ('cancelled'), ('completed'), ('no_show');
+INSERT INTO BookingStatuses (StatusName)
+VALUES ('pending'),
+       ('confirmed'),
+       ('cancelled'),
+       ('completed'),
+       ('no_show');
 GO
 
-INSERT INTO PaymentStatuses (StatusName) VALUES 
-    ('pending'), ('paid'), ('failed'), ('refunded');
+INSERT INTO PaymentStatuses (StatusName)
+VALUES ('pending'),
+       ('paid'),
+       ('failed'),
+       ('refunded');
 GO
 
-INSERT INTO PromotionStatuses (StatusName) VALUES 
-    ('active'), ('inactive'), ('expired');
+INSERT INTO PromotionStatuses (StatusName)
+VALUES ('active'),
+       ('inactive'),
+       ('expired');
 GO
 
-INSERT INTO ReviewStatuses (StatusName) VALUES 
-    ('pending'), ('approved'), ('rejected');
+INSERT INTO ReviewStatuses (StatusName)
+VALUES ('pending'),
+       ('approved'),
+       ('rejected');
 GO
 
-INSERT INTO BookingHoldStatuses (StatusName) VALUES 
-    ('active'), ('expired'), ('consumed'), ('cancelled');
+INSERT INTO BookingHoldStatuses (StatusName)
+VALUES ('active'),
+       ('expired'),
+       ('consumed'),
+       ('cancelled');
 GO
 
 /*******************************************************************************
 * SECTION 3: CORE TABLES
 *******************************************************************************/
 -- Create the Users table first as other tables depend on it
-CREATE TABLE Users (
-                       UserID INT PRIMARY KEY IDENTITY(1,1),
-                       UserName NVARCHAR(50) NOT NULL UNIQUE,
-                       PassWord NVARCHAR(255) NOT NULL,
-                       Email NVARCHAR(100) NOT NULL UNIQUE,
-                       Phone NVARCHAR(20),
-                       FullName NVARCHAR(100),
-                       RoleID INT NOT NULL,
-                       StatusID INT NOT NULL,
-                       DateOfBirth DATE NULL,
-                       Gender NVARCHAR(10) CHECK (Gender IN (N'Nam', N'Nữ', N'Khác')),
-                       Address NVARCHAR(255),
-                       MembershipType NVARCHAR(20) DEFAULT 'Basic' CHECK (MembershipType IN ('Basic', 'Premium', 'VIP')),
-                       CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                       UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                       LastLogin DATETIME NULL,
-                       Avatar NVARCHAR(255),
-                       IsDeleted BIT NOT NULL DEFAULT 0,
-                       Reset_Token NVARCHAR(100) NULL,
-                       Reset_Token_Expiry DATETIME NULL,
-                       Google_Id NVARCHAR(100) NULL,
-                       FOREIGN KEY (RoleID) REFERENCES Roles(RoleID),
-                       FOREIGN KEY (StatusID) REFERENCES UserStatuses(StatusID)
+CREATE TABLE Users
+(
+    UserID             INT PRIMARY KEY IDENTITY (1,1),
+    UserName           NVARCHAR(50)  NOT NULL UNIQUE,
+    PassWord           NVARCHAR(255) NOT NULL,
+    Email              NVARCHAR(100) NOT NULL UNIQUE,
+    Phone              NVARCHAR(20),
+    FullName           NVARCHAR(100),
+    RoleID             INT           NOT NULL,
+    StatusID           INT           NOT NULL,
+    DateOfBirth        DATE          NULL,
+    Gender             NVARCHAR(10) CHECK (Gender IN (N'Nam', N'Nữ', N'Khác')),
+    Address            NVARCHAR(255),
+    MembershipType     NVARCHAR(20)           DEFAULT 'Basic' CHECK (MembershipType IN ('Basic', 'Premium', 'VIP')),
+    CreatedAt          DATETIME      NOT NULL DEFAULT GETDATE(),
+    UpdatedAt          DATETIME      NOT NULL DEFAULT GETDATE(),
+    LastLogin          DATETIME      NULL,
+    Avatar             NVARCHAR(255),
+    IsDeleted          BIT           NOT NULL DEFAULT 0,
+    Reset_Token        NVARCHAR(100) NULL,
+    Reset_Token_Expiry DATETIME      NULL,
+    Google_Id          NVARCHAR(100) NULL,
+    FOREIGN KEY (RoleID) REFERENCES Roles (RoleID),
+    FOREIGN KEY (StatusID) REFERENCES UserStatuses (StatusID)
 );
 GO
 
-CREATE TABLE Facilities (
-                            FacilityID INT PRIMARY KEY IDENTITY(1,1),
-                            FacilityName NVARCHAR(100) NOT NULL,
-                            Address NVARCHAR(255) NOT NULL,
-                            Province NVARCHAR(50) NOT NULL,
-                            District NVARCHAR(50) NOT NULL,
-                            Ward NVARCHAR(50) NOT NULL,
-                            Phone NVARCHAR(20),
-                            Email NVARCHAR(100),
-                            ManagerUserID INT NULL,
-                            Description NVARCHAR(MAX),
-                            Amenities NVARCHAR(MAX),
-                            StatusID INT NOT NULL,
-                            Rating DECIMAL(3,2) DEFAULT 0,
-                            TotalRatings INT DEFAULT 0,
-                            OpenTime TIME NOT NULL DEFAULT '06:00:00',
-                            CloseTime TIME NOT NULL DEFAULT '22:00:00',
-                            CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                            UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                            IsDeleted BIT NOT NULL DEFAULT 0,
-                            FOREIGN KEY (ManagerUserID) REFERENCES Users(UserID),
-                            FOREIGN KEY (StatusID) REFERENCES FacilityStatuses(StatusID)
+CREATE TABLE Facilities
+(
+    FacilityID    INT PRIMARY KEY IDENTITY (1,1),
+    FacilityName  NVARCHAR(100) NOT NULL,
+    Address       NVARCHAR(255) NOT NULL,
+    Province      NVARCHAR(50)  NOT NULL,
+    District      NVARCHAR(50)  NOT NULL,
+    Ward          NVARCHAR(50)  NOT NULL,
+    Phone         NVARCHAR(20),
+    Email         NVARCHAR(100),
+    ManagerUserID INT           NULL,
+    Description   NVARCHAR(MAX),
+    Amenities     NVARCHAR(MAX),
+    StatusID      INT           NOT NULL,
+    Rating        DECIMAL(3, 2)          DEFAULT 0,
+    TotalRatings  INT                    DEFAULT 0,
+    OpenTime      TIME          NOT NULL DEFAULT '06:00:00',
+    CloseTime     TIME          NOT NULL DEFAULT '22:00:00',
+    CreatedAt     DATETIME      NOT NULL DEFAULT GETDATE(),
+    UpdatedAt     DATETIME      NOT NULL DEFAULT GETDATE(),
+    IsDeleted     BIT           NOT NULL DEFAULT 0,
+    FOREIGN KEY (ManagerUserID) REFERENCES Users (UserID),
+    FOREIGN KEY (StatusID) REFERENCES FacilityStatuses (StatusID)
 );
 GO
 
-CREATE TABLE Courts (
-                        CourtID INT PRIMARY KEY IDENTITY(1,1),
-                        FacilityID INT NOT NULL,
-                        CourtName NVARCHAR(50) NOT NULL,
-                        TypeID INT NOT NULL,
-                        SurfaceID INT NOT NULL,
-                        IsIndoor BIT NOT NULL DEFAULT 1,
-                        HasLighting BIT NOT NULL DEFAULT 1,
-                        StatusID INT NOT NULL,
-                        Description NVARCHAR(255),
-                        CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                        UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                        IsDeleted BIT NOT NULL DEFAULT 0,
-                        FOREIGN KEY (FacilityID) REFERENCES Facilities(FacilityID) ON DELETE CASCADE,
-                        FOREIGN KEY (TypeID) REFERENCES CourtTypes(TypeID),
-                        FOREIGN KEY (SurfaceID) REFERENCES CourtSurfaces(SurfaceID),
-                        FOREIGN KEY (StatusID) REFERENCES CourtStatuses(StatusID)
+CREATE TABLE Courts
+(
+    CourtID     INT PRIMARY KEY IDENTITY (1,1),
+    FacilityID  INT          NOT NULL,
+    CourtName   NVARCHAR(50) NOT NULL,
+    TypeID      INT          NOT NULL,
+    SurfaceID   INT          NOT NULL,
+    IsIndoor    BIT          NOT NULL DEFAULT 1,
+    HasLighting BIT          NOT NULL DEFAULT 1,
+    StatusID    INT          NOT NULL,
+    Description NVARCHAR(255),
+    CreatedAt   DATETIME     NOT NULL DEFAULT GETDATE(),
+    UpdatedAt   DATETIME     NOT NULL DEFAULT GETDATE(),
+    IsDeleted   BIT          NOT NULL DEFAULT 0,
+    FOREIGN KEY (FacilityID) REFERENCES Facilities (FacilityID) ON DELETE CASCADE,
+    FOREIGN KEY (TypeID) REFERENCES CourtTypes (TypeID),
+    FOREIGN KEY (SurfaceID) REFERENCES CourtSurfaces (SurfaceID),
+    FOREIGN KEY (StatusID) REFERENCES CourtStatuses (StatusID)
 );
 GO
 
-CREATE TABLE CourtImages (
-                             ImageID INT PRIMARY KEY IDENTITY(1,1),
-                             CourtID INT NOT NULL,
-                             ImageURL NVARCHAR(255) NOT NULL,
-                             IsMainImage BIT NOT NULL DEFAULT 0,
-                             Description NVARCHAR(255),
-                             DisplayOrder INT NOT NULL DEFAULT 0,
-                             IsDeleted BIT NOT NULL DEFAULT 0,
-                             FOREIGN KEY (CourtID) REFERENCES Courts(CourtID) ON DELETE CASCADE
+CREATE TABLE CourtImages
+(
+    ImageID      INT PRIMARY KEY IDENTITY (1,1),
+    CourtID      INT           NOT NULL,
+    ImageURL     NVARCHAR(255) NOT NULL,
+    IsMainImage  BIT           NOT NULL DEFAULT 0,
+    Description  NVARCHAR(255),
+    DisplayOrder INT           NOT NULL DEFAULT 0,
+    IsDeleted    BIT           NOT NULL DEFAULT 0,
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID) ON DELETE CASCADE
 );
 GO
 
-CREATE TABLE TimeSlots (
-                           TimeSlotID INT PRIMARY KEY IDENTITY(1,1),
-                           CourtID INT NOT NULL,
-                           SlotDate DATE NOT NULL,
-                           StartTime TIME NOT NULL,
-                           EndTime TIME NOT NULL,
-                           TimeSlotStatusID INT NOT NULL,
-                           Price DECIMAL(10,2) NOT NULL,
-                           CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                           FOREIGN KEY (CourtID) REFERENCES Courts(CourtID) ON DELETE CASCADE,
-                           FOREIGN KEY (TimeSlotStatusID) REFERENCES TimeSlotStatuses(TimeSlotStatusID)
+CREATE TABLE TimeSlots
+(
+    TimeSlotID       INT PRIMARY KEY IDENTITY (1,1),
+    CourtID          INT            NOT NULL,
+    SlotDate         DATE           NOT NULL,
+    StartTime        TIME           NOT NULL,
+    EndTime          TIME           NOT NULL,
+    TimeSlotStatusID INT            NOT NULL,
+    Price            DECIMAL(10, 2) NOT NULL,
+    CreatedAt        DATETIME       NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID) ON DELETE CASCADE,
+    FOREIGN KEY (TimeSlotStatusID) REFERENCES TimeSlotStatuses (TimeSlotStatusID)
 );
 GO
 
-CREATE TABLE Bookings (
-                          BookingID INT PRIMARY KEY IDENTITY(1,1),
-                          UserID INT NULL,
-                          BookingNumber NVARCHAR(50) NOT NULL UNIQUE,
-                          BookingDate DATE NOT NULL,
-                          TotalAmount DECIMAL(10,2) NOT NULL,
-                          DiscountAmount DECIMAL(10,2) NOT NULL DEFAULT 0,
-                          BookingStatusID INT NOT NULL,
-                          PaymentStatusID INT NOT NULL,
-                          CustomerName NVARCHAR(100) NOT NULL,
-                          CustomerPhone NVARCHAR(20) NOT NULL,
-                          CustomerEmail NVARCHAR(100),
-                          Notes NVARCHAR(MAX),
-                          CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                          UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                          CancelledAt DATETIME NULL,
-                          CancellationReason NVARCHAR(255),
-                          IsDeleted BIT NOT NULL DEFAULT 0,
-                          FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
-                          FOREIGN KEY (BookingStatusID) REFERENCES BookingStatuses(BookingStatusID),
-                          FOREIGN KEY (PaymentStatusID) REFERENCES PaymentStatuses(PaymentStatusID),
-                          CONSTRAINT CK_Bookings_Amounts CHECK (TotalAmount >= 0 AND DiscountAmount >= 0 AND TotalAmount >= DiscountAmount)
+CREATE TABLE Bookings
+(
+    BookingID          INT PRIMARY KEY IDENTITY (1,1),
+    UserID             INT            NULL,
+    BookingNumber      NVARCHAR(50)   NOT NULL UNIQUE,
+    BookingDate        DATE           NOT NULL,
+    TotalAmount        DECIMAL(10, 2) NOT NULL,
+    DiscountAmount     DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    BookingStatusID    INT            NOT NULL,
+    PaymentStatusID    INT            NOT NULL,
+    CustomerName       NVARCHAR(100)  NOT NULL,
+    CustomerPhone      NVARCHAR(20)   NOT NULL,
+    CustomerEmail      NVARCHAR(100),
+    Notes              NVARCHAR(MAX),
+    CreatedAt          DATETIME       NOT NULL DEFAULT GETDATE(),
+    UpdatedAt          DATETIME       NOT NULL DEFAULT GETDATE(),
+    CancelledAt        DATETIME       NULL,
+    CancellationReason NVARCHAR(255),
+    IsDeleted          BIT            NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserID) REFERENCES Users (UserID) ON DELETE SET NULL,
+    FOREIGN KEY (BookingStatusID) REFERENCES BookingStatuses (BookingStatusID),
+    FOREIGN KEY (PaymentStatusID) REFERENCES PaymentStatuses (PaymentStatusID),
+    CONSTRAINT CK_Bookings_Amounts CHECK (TotalAmount >= 0 AND DiscountAmount >= 0 AND TotalAmount >= DiscountAmount)
 );
 GO
 
 -- Add computed column for final amount
-ALTER TABLE Bookings ADD
-    FinalAmount AS (TotalAmount - DiscountAmount) PERSISTED;
+ALTER TABLE Bookings
+    ADD
+        FinalAmount AS (TotalAmount - DiscountAmount) PERSISTED;
 GO
 
-CREATE TABLE BookingDetails (
-                                BookingDetailID INT PRIMARY KEY IDENTITY(1,1),
-                                BookingID INT NOT NULL,
-                                CourtID INT NOT NULL,
-                                SlotDate DATE NOT NULL,
-                                StartTime TIME NOT NULL,
-                                EndTime TIME NOT NULL,
-                                LineAmount DECIMAL(10,2) NOT NULL,
-                                CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                                IsDeleted BIT NOT NULL DEFAULT 0,
-                                FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE CASCADE,
-                                FOREIGN KEY (CourtID) REFERENCES Courts(CourtID),
-                                CONSTRAINT CK_BookingDetails_Time CHECK (EndTime > StartTime)
+CREATE TABLE BookingDetails
+(
+    BookingDetailID INT PRIMARY KEY IDENTITY (1,1),
+    BookingID       INT            NOT NULL,
+    CourtID         INT            NOT NULL,
+    SlotDate        DATE           NOT NULL,
+    StartTime       TIME           NOT NULL,
+    EndTime         TIME           NOT NULL,
+    LineAmount      DECIMAL(10, 2) NOT NULL,
+    CreatedAt       DATETIME       NOT NULL DEFAULT GETDATE(),
+    IsDeleted       BIT            NOT NULL DEFAULT 0,
+    FOREIGN KEY (BookingID) REFERENCES Bookings (BookingID) ON DELETE CASCADE,
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID),
+    CONSTRAINT CK_BookingDetails_Time CHECK (EndTime > StartTime)
 );
 GO
 
-CREATE TABLE PaymentMethods (
-                                PaymentMethodID INT PRIMARY KEY IDENTITY(1,1),
-                                MethodName NVARCHAR(100) NOT NULL UNIQUE,
-                                Description NVARCHAR(500),
-                                IsActive BIT NOT NULL DEFAULT 1,
-                                CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                                UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                                IsDeleted BIT NOT NULL DEFAULT 0
+CREATE TABLE PaymentMethods
+(
+    PaymentMethodID INT PRIMARY KEY IDENTITY (1,1),
+    MethodName      NVARCHAR(100) NOT NULL UNIQUE,
+    Description     NVARCHAR(500),
+    IsActive        BIT           NOT NULL DEFAULT 1,
+    CreatedAt       DATETIME      NOT NULL DEFAULT GETDATE(),
+    UpdatedAt       DATETIME      NOT NULL DEFAULT GETDATE(),
+    IsDeleted       BIT           NOT NULL DEFAULT 0
 );
 GO
 
-CREATE TABLE Payments (
-                          PaymentID INT PRIMARY KEY IDENTITY(1,1),
-                          BookingID INT NOT NULL,
-                          PaymentMethodID INT,
-                          TransactionID NVARCHAR(100) NOT NULL,
-                          Amount DECIMAL(12,2) NOT NULL CHECK (Amount >= 0),
-                          PaymentStatusID INT NOT NULL,
-                          PaymentDate DATETIME NOT NULL DEFAULT GETDATE(),
-                          PaymentDetails NVARCHAR(MAX),
-                          RefundAmount DECIMAL(12,2) DEFAULT 0,
-                          RefundDate DATETIME NULL,
-                          IsDeleted BIT NOT NULL DEFAULT 0,
-                          FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE CASCADE,
-                          FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethods(PaymentMethodID) ON DELETE SET NULL,
-                          FOREIGN KEY (PaymentStatusID) REFERENCES PaymentStatuses(PaymentStatusID)
+CREATE TABLE Payments
+(
+    PaymentID       INT PRIMARY KEY IDENTITY (1,1),
+    BookingID       INT            NOT NULL,
+    PaymentMethodID INT,
+    TransactionID   NVARCHAR(100)  NOT NULL,
+    Amount          DECIMAL(12, 2) NOT NULL CHECK (Amount >= 0),
+    PaymentStatusID INT            NOT NULL,
+    PaymentDate     DATETIME       NOT NULL DEFAULT GETDATE(),
+    PaymentDetails  NVARCHAR(MAX),
+    RefundAmount    DECIMAL(12, 2)          DEFAULT 0,
+    RefundDate      DATETIME       NULL,
+    IsDeleted       BIT            NOT NULL DEFAULT 0,
+    FOREIGN KEY (BookingID) REFERENCES Bookings (BookingID) ON DELETE CASCADE,
+    FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethods (PaymentMethodID) ON DELETE SET NULL,
+    FOREIGN KEY (PaymentStatusID) REFERENCES PaymentStatuses (PaymentStatusID)
 );
 
 GO
 
-CREATE TABLE PricingRules (
-                              PricingID INT PRIMARY KEY IDENTITY(1,1),
-                              CourtID INT NOT NULL,
-                              DayType NVARCHAR(20) NOT NULL CHECK (DayType IN ('Weekday', 'Weekend')),
-                              TimeSlotStart TIME NOT NULL,
-                              TimeSlotEnd TIME NOT NULL,
-                              PricePerHour DECIMAL(10,2) NOT NULL,
-                              EffectiveFrom DATE NOT NULL,
-                              EffectiveTo DATE NULL,
-                              IsActive BIT NOT NULL DEFAULT 1,
-                              CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                              FOREIGN KEY (CourtID) REFERENCES Courts(CourtID) ON DELETE CASCADE,
-                              CONSTRAINT CK_PricingRules_Time CHECK (TimeSlotEnd > TimeSlotStart),
-                              CONSTRAINT CK_PricingRules_Effective CHECK (EffectiveTo IS NULL OR EffectiveTo >= EffectiveFrom)
+CREATE TABLE PricingRules
+(
+    PricingID     INT PRIMARY KEY IDENTITY (1,1),
+    CourtID       INT            NOT NULL,
+    DayType       NVARCHAR(20)   NOT NULL CHECK (DayType IN ('Weekday', 'Weekend')),
+    TimeSlotStart TIME           NOT NULL,
+    TimeSlotEnd   TIME           NOT NULL,
+    PricePerHour  DECIMAL(10, 2) NOT NULL,
+    EffectiveFrom DATE           NOT NULL,
+    EffectiveTo   DATE           NULL,
+    IsActive      BIT            NOT NULL DEFAULT 1,
+    CreatedAt     DATETIME       NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID) ON DELETE CASCADE,
+    CONSTRAINT CK_PricingRules_Time CHECK (TimeSlotEnd > TimeSlotStart),
+    CONSTRAINT CK_PricingRules_Effective CHECK (EffectiveTo IS NULL OR EffectiveTo >= EffectiveFrom)
 );
 GO
 
-CREATE TABLE Promotions (
-                            PromotionID INT PRIMARY KEY IDENTITY(1,1),
-                            Code NVARCHAR(50) NOT NULL UNIQUE,
-                            Title NVARCHAR(200) NOT NULL,
-                            Description NVARCHAR(MAX),
-                            DiscountType NVARCHAR(20) NOT NULL CHECK (DiscountType IN ('percentage', 'fixed_amount', 'buy_x_get_y')),
-                            DiscountValue DECIMAL(12,2) NOT NULL CHECK (DiscountValue >= 0),
-                            MinimumBookingAmount DECIMAL(12,2) NOT NULL CHECK (MinimumBookingAmount >= 0),
-                            MaximumDiscount DECIMAL(12,2) CHECK (MaximumDiscount >= 0),
-                            UsageLimit INT NOT NULL CHECK (UsageLimit >= 0),
-                            UsageCount INT NOT NULL DEFAULT 0 CHECK (UsageCount >= 0),
-                            StartDate DATETIME NOT NULL,
-                            EndDate DATETIME NOT NULL,
-                            ApplicableCourtTypes NVARCHAR(100),
-                            ApplicableDays NVARCHAR(20),
-                            PromotionStatusID INT NOT NULL,
-                            CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                            UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                            IsDeleted BIT NOT NULL DEFAULT 0,
-                            FOREIGN KEY (PromotionStatusID) REFERENCES PromotionStatuses(PromotionStatusID)
+CREATE TABLE Promotions
+(
+    PromotionID          INT PRIMARY KEY IDENTITY (1,1),
+    Code                 NVARCHAR(50)   NOT NULL UNIQUE,
+    Title                NVARCHAR(200)  NOT NULL,
+    Description          NVARCHAR(MAX),
+    DiscountType         NVARCHAR(20)   NOT NULL CHECK (DiscountType IN ('percentage', 'fixed_amount', 'buy_x_get_y')),
+    DiscountValue        DECIMAL(12, 2) NOT NULL CHECK (DiscountValue >= 0),
+    MinimumBookingAmount DECIMAL(12, 2) NOT NULL CHECK (MinimumBookingAmount >= 0),
+    MaximumDiscount      DECIMAL(12, 2) CHECK (MaximumDiscount >= 0),
+    UsageLimit           INT            NOT NULL CHECK (UsageLimit >= 0),
+    UsageCount           INT            NOT NULL DEFAULT 0 CHECK (UsageCount >= 0),
+    StartDate            DATETIME       NOT NULL,
+    EndDate              DATETIME       NOT NULL,
+    ApplicableCourtTypes NVARCHAR(100),
+    ApplicableDays       NVARCHAR(20),
+    PromotionStatusID    INT            NOT NULL,
+    CreatedAt            DATETIME       NOT NULL DEFAULT GETDATE(),
+    UpdatedAt            DATETIME       NOT NULL DEFAULT GETDATE(),
+    IsDeleted            BIT            NOT NULL DEFAULT 0,
+    FOREIGN KEY (PromotionStatusID) REFERENCES PromotionStatuses (PromotionStatusID)
 );
 GO
 
-CREATE TABLE Reviews (
-                         ReviewID INT PRIMARY KEY IDENTITY(1,1),
-                         FacilityID INT NOT NULL,
-                         CourtID INT NULL,
-                         UserID INT NOT NULL,
-                         BookingID INT,
-                         Rating INT NOT NULL CHECK (Rating BETWEEN 1 AND 5),
-                         Comment NVARCHAR(MAX),
-                         Aspects NVARCHAR(MAX),
-                         ReviewDate DATETIME NOT NULL DEFAULT GETDATE(),
-                         ReviewStatusID INT NOT NULL,
-                         IsVerifiedBooking BIT NOT NULL DEFAULT 0,
-                         IsDeleted BIT NOT NULL DEFAULT 0,
-                         FOREIGN KEY (FacilityID) REFERENCES Facilities(FacilityID) ON DELETE CASCADE,
-                         FOREIGN KEY (CourtID) REFERENCES Courts(CourtID) ON DELETE NO ACTION,
-                         FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
-                         FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID) ON DELETE SET NULL,
-                         FOREIGN KEY (ReviewStatusID) REFERENCES ReviewStatuses(ReviewStatusID)
+CREATE TABLE Reviews
+(
+    ReviewID          INT PRIMARY KEY IDENTITY (1,1),
+    FacilityID        INT      NOT NULL,
+    CourtID           INT      NULL,
+    UserID            INT      NOT NULL,
+    BookingID         INT,
+    Rating            INT      NOT NULL CHECK (Rating BETWEEN 1 AND 5),
+    Comment           NVARCHAR(MAX),
+    Aspects           NVARCHAR(MAX),
+    ReviewDate        DATETIME NOT NULL DEFAULT GETDATE(),
+    ReviewStatusID    INT      NOT NULL,
+    IsVerifiedBooking BIT      NOT NULL DEFAULT 0,
+    IsDeleted         BIT      NOT NULL DEFAULT 0,
+    FOREIGN KEY (FacilityID) REFERENCES Facilities (FacilityID) ON DELETE CASCADE,
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID) ON DELETE NO ACTION,
+    FOREIGN KEY (UserID) REFERENCES Users (UserID) ON DELETE CASCADE,
+    FOREIGN KEY (BookingID) REFERENCES Bookings (BookingID) ON DELETE SET NULL,
+    FOREIGN KEY (ReviewStatusID) REFERENCES ReviewStatuses (ReviewStatusID)
 );
 GO
 
-CREATE TABLE FacilityOperatingHours (
-                                        FacilityID INT NOT NULL,
-                                        DayOfWeek TINYINT NOT NULL CHECK (DayOfWeek BETWEEN 0 AND 6),
-                                        OpenTime TIME NOT NULL,
-                                        CloseTime TIME NOT NULL,
-                                        IsClosed BIT NOT NULL DEFAULT 0,
-                                        PRIMARY KEY (FacilityID, DayOfWeek),
-                                        FOREIGN KEY (FacilityID) REFERENCES Facilities(FacilityID) ON DELETE CASCADE,
-                                        CONSTRAINT CK_FOH_Time CHECK (IsClosed = 1 OR CloseTime > OpenTime)
+CREATE TABLE FacilityOperatingHours
+(
+    FacilityID INT     NOT NULL,
+    DayOfWeek  TINYINT NOT NULL CHECK (DayOfWeek BETWEEN 0 AND 6),
+    OpenTime   TIME    NOT NULL,
+    CloseTime  TIME    NOT NULL,
+    IsClosed   BIT     NOT NULL DEFAULT 0,
+    PRIMARY KEY (FacilityID, DayOfWeek),
+    FOREIGN KEY (FacilityID) REFERENCES Facilities (FacilityID) ON DELETE CASCADE,
+    CONSTRAINT CK_FOH_Time CHECK (IsClosed = 1 OR CloseTime > OpenTime)
 );
 GO
 
-CREATE TABLE CourtMaintenance (
-                                  MaintenanceID INT IDENTITY PRIMARY KEY,
-                                  CourtID INT NOT NULL,
-                                  StartDateTime DATETIME2 NOT NULL,
-                                  EndDateTime DATETIME2 NOT NULL,
-                                  Reason NVARCHAR(200),
-                                  FOREIGN KEY (CourtID) REFERENCES Courts(CourtID),
-                                  CONSTRAINT CK_CM_Time CHECK (EndDateTime > StartDateTime)
+CREATE TABLE CourtMaintenance
+(
+    MaintenanceID INT IDENTITY PRIMARY KEY,
+    CourtID       INT       NOT NULL,
+    StartDateTime DATETIME2 NOT NULL,
+    EndDateTime   DATETIME2 NOT NULL,
+    Reason        NVARCHAR(200),
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID),
+    CONSTRAINT CK_CM_Time CHECK (EndDateTime > StartDateTime)
 );
 GO
 
-CREATE TABLE BookingHolds (
-                              HoldID INT IDENTITY PRIMARY KEY,
-                              CourtID INT NOT NULL,
-                              SlotDate DATE NOT NULL,
-                              StartTime TIME NOT NULL,
-                              EndTime TIME NOT NULL,
-                              UserID INT NULL,
-                              ExpiresAt DATETIME2 NOT NULL,
-                              BookingHoldStatusID INT NOT NULL,
-                              CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-                              FOREIGN KEY (CourtID) REFERENCES Courts(CourtID),
-                              FOREIGN KEY (UserID) REFERENCES Users(UserID),
-                              FOREIGN KEY (BookingHoldStatusID) REFERENCES BookingHoldStatuses(BookingHoldStatusID)
+CREATE TABLE BookingHolds
+(
+    HoldID              INT IDENTITY PRIMARY KEY,
+    CourtID             INT       NOT NULL,
+    SlotDate            DATE      NOT NULL,
+    StartTime           TIME      NOT NULL,
+    EndTime             TIME      NOT NULL,
+    UserID              INT       NULL,
+    ExpiresAt           DATETIME2 NOT NULL,
+    BookingHoldStatusID INT       NOT NULL,
+    CreatedAt           DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    FOREIGN KEY (CourtID) REFERENCES Courts (CourtID),
+    FOREIGN KEY (UserID) REFERENCES Users (UserID),
+    FOREIGN KEY (BookingHoldStatusID) REFERENCES BookingHoldStatuses (BookingHoldStatusID)
 );
 GO
 
-CREATE TABLE BookingStatusHistory (
-                                      HistoryID INT IDENTITY PRIMARY KEY,
-                                      BookingID INT NOT NULL,
-                                      OldStatus NVARCHAR(20) NULL,
-                                      NewStatus NVARCHAR(20) NOT NULL,
-                                      ChangedByUserID INT NULL,
-                                      ChangedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-                                      Note NVARCHAR(200) NULL,
-                                      FOREIGN KEY (BookingID) REFERENCES Bookings(BookingID),
-                                      FOREIGN KEY (ChangedByUserID) REFERENCES Users(UserID)
+CREATE TABLE BookingStatusHistory
+(
+    HistoryID       INT IDENTITY PRIMARY KEY,
+    BookingID       INT           NOT NULL,
+    OldStatus       NVARCHAR(20)  NULL,
+    NewStatus       NVARCHAR(20)  NOT NULL,
+    ChangedByUserID INT           NULL,
+    ChangedAt       DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
+    Note            NVARCHAR(200) NULL,
+    FOREIGN KEY (BookingID) REFERENCES Bookings (BookingID),
+    FOREIGN KEY (ChangedByUserID) REFERENCES Users (UserID)
 );
 GO
 
@@ -440,31 +499,31 @@ GO
 *******************************************************************************/
 -- Create indexes after all tables are created
 CREATE UNIQUE INDEX UX_Courts_Facility_CourtName
-    ON Courts(FacilityID, CourtName)
+    ON Courts (FacilityID, CourtName)
     WHERE IsDeleted = 0;
 GO
 
 CREATE UNIQUE INDEX UX_CourtImages_Main
-    ON CourtImages(CourtID)
+    ON CourtImages (CourtID)
     WHERE IsMainImage = 1;
 GO
 
 CREATE UNIQUE INDEX UX_TimeSlots_CourtDateStartEnd
-    ON TimeSlots(CourtID, SlotDate, StartTime, EndTime);
+    ON TimeSlots (CourtID, SlotDate, StartTime, EndTime);
 GO
 
-CREATE NONCLUSTERED INDEX IX_BookingDetails_Active 
-ON BookingDetails(CourtID, SlotDate, StartTime, EndTime)
-WHERE IsDeleted = 0;
+CREATE NONCLUSTERED INDEX IX_BookingDetails_Active
+    ON BookingDetails (CourtID, SlotDate, StartTime, EndTime)
+    WHERE IsDeleted = 0;
 GO
 
 CREATE INDEX IX_Bookings_Status
-    ON Bookings(BookingStatusID)
+    ON Bookings (BookingStatusID)
     INCLUDE (BookingDate, IsDeleted);
 GO
 
 CREATE INDEX IX_TimeSlots_Availability
-    ON TimeSlots(CourtID, SlotDate, TimeSlotStatusID);
+    ON TimeSlots (CourtID, SlotDate, TimeSlotStatusID);
 GO
 
 /*******************************************************************************
@@ -473,91 +532,102 @@ GO
 CREATE TRIGGER TRG_Users_SetUpdatedAt
     ON Users
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE U SET UpdatedAt = GETDATE()
-    FROM Users U INNER JOIN inserted i ON U.UserID = i.UserID;
+    UPDATE U
+    SET UpdatedAt = GETDATE()
+    FROM Users U
+             INNER JOIN inserted i ON U.UserID = i.UserID;
 END;
 GO
 
 CREATE TRIGGER TRG_Facilities_SetUpdatedAt
     ON Facilities
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE F SET UpdatedAt = GETDATE()
-    FROM Facilities F INNER JOIN inserted i ON F.FacilityID = i.FacilityID;
+    UPDATE F
+    SET UpdatedAt = GETDATE()
+    FROM Facilities F
+             INNER JOIN inserted i ON F.FacilityID = i.FacilityID;
 END;
 GO
 
 CREATE TRIGGER TRG_Courts_SetUpdatedAt
     ON Courts
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE C SET UpdatedAt = GETDATE()
-    FROM Courts C INNER JOIN inserted i ON C.CourtID = i.CourtID;
+    UPDATE C
+    SET UpdatedAt = GETDATE()
+    FROM Courts C
+             INNER JOIN inserted i ON C.CourtID = i.CourtID;
 END;
 GO
 
 CREATE TRIGGER TRG_Bookings_SetUpdatedAt
     ON Bookings
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE B SET UpdatedAt = GETDATE()
-    FROM Bookings B INNER JOIN inserted i ON B.BookingID = i.BookingID;
+    UPDATE B
+    SET UpdatedAt = GETDATE()
+    FROM Bookings B
+             INNER JOIN inserted i ON B.BookingID = i.BookingID;
 END;
 GO
 
 CREATE TRIGGER TRG_PaymentMethods_SetUpdatedAt
     ON PaymentMethods
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE PM SET UpdatedAt = GETDATE()
-    FROM PaymentMethods PM INNER JOIN inserted i ON PM.PaymentMethodID = i.PaymentMethodID;
+    UPDATE PM
+    SET UpdatedAt = GETDATE()
+    FROM PaymentMethods PM
+             INNER JOIN inserted i ON PM.PaymentMethodID = i.PaymentMethodID;
 END;
 GO
 
 CREATE TRIGGER TRG_Promotions_SetUpdatedAt
     ON Promotions
     AFTER UPDATE
-              AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-UPDATE P SET UpdatedAt = GETDATE()
-    FROM Promotions P INNER JOIN inserted i ON P.PromotionID = i.PromotionID;
+    UPDATE P
+    SET UpdatedAt = GETDATE()
+    FROM Promotions P
+             INNER JOIN inserted i ON P.PromotionID = i.PromotionID;
 END;
 GO
 
 CREATE TRIGGER TRG_BookingDetails_NoOverlap
     ON BookingDetails
     AFTER INSERT, UPDATE
-                      AS
+    AS
 BEGIN
     SET NOCOUNT ON;
-    IF EXISTS (
-        SELECT 1 FROM BookingDetails bd
-        JOIN inserted i ON bd.CourtID = i.CourtID
-            AND bd.SlotDate = i.SlotDate
-            AND bd.BookingDetailID <> i.BookingDetailID
-            AND i.StartTime < bd.EndTime
-            AND i.EndTime > bd.StartTime
-        JOIN Bookings b ON b.BookingID = bd.BookingID
-        JOIN BookingStatuses bs ON bs.BookingStatusID = b.BookingStatusID
-        WHERE bs.StatusName IN ('pending','confirmed')
-    )
-BEGIN
-        RAISERROR('Court is already booked for this time range', 16, 1);
-ROLLBACK TRANSACTION;
-RETURN;
-END
+    IF EXISTS (SELECT 1
+               FROM BookingDetails bd
+                        JOIN inserted i ON bd.CourtID = i.CourtID
+                   AND bd.SlotDate = i.SlotDate
+                   AND bd.BookingDetailID <> i.BookingDetailID
+                   AND i.StartTime < bd.EndTime
+                   AND i.EndTime > bd.StartTime
+                        JOIN Bookings b ON b.BookingID = bd.BookingID
+                        JOIN BookingStatuses bs ON bs.BookingStatusID = b.BookingStatusID
+               WHERE bs.StatusName IN ('pending', 'confirmed'))
+        BEGIN
+            RAISERROR ('Court is already booked for this time range', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
 END;
 GO
 
@@ -565,94 +635,97 @@ GO
 * SECTION 6: SAMPLE DATA
 *******************************************************************************/
 -- Insert sample users
-DECLARE @AdminRoleID INT = (SELECT RoleID FROM Roles WHERE RoleName='admin');
-DECLARE @ManagerRoleID INT = (SELECT RoleID FROM Roles WHERE RoleName='manager');
-DECLARE @CustomerRoleID INT = (SELECT RoleID FROM Roles WHERE RoleName='customer');
-DECLARE @ActiveStatusID INT = (SELECT StatusID FROM UserStatuses WHERE StatusName='active');
+DECLARE @AdminRoleID INT = (SELECT RoleID
+                            FROM Roles
+                            WHERE RoleName = 'admin');
+DECLARE @ManagerRoleID INT = (SELECT RoleID
+                              FROM Roles
+                              WHERE RoleName = 'manager');
+DECLARE @CustomerRoleID INT = (SELECT RoleID
+                               FROM Roles
+                               WHERE RoleName = 'customer');
+DECLARE @ActiveStatusID INT = (SELECT StatusID
+                               FROM UserStatuses
+                               WHERE StatusName = 'active');
 
-INSERT INTO Users (UserName, PassWord, Email, Phone, FullName, RoleID, StatusID, DateOfBirth, Gender, Address, MembershipType)
-VALUES
-    ('admin1', 'hashed_password_1', 'admin@pickleball.vn', '0901234567', N'Nguyễn Văn Admin',
-     @AdminRoleID, @ActiveStatusID,
-     '1990-01-01', N'Nam', N'123 Đường ABC, TP.HCM', 'VIP'),
+INSERT INTO Users (UserName, PassWord, Email, Phone, FullName, RoleID, StatusID, DateOfBirth, Gender, Address,
+                   MembershipType)
+VALUES ('admin1', 'hashed_password_1', 'admin@pickleball.vn', '0901234567', N'Nguyễn Văn Admin',
+        @AdminRoleID, @ActiveStatusID,
+        '1990-01-01', N'Nam', N'123 Đường ABC, TP.HCM', 'VIP'),
 
-    ('manager1', 'hashed_password_2', 'manager1@pickleball.vn', '0902345678', N'Trần Thị Manager',
-     @ManagerRoleID, @ActiveStatusID,
-     '1985-05-15', N'Nữ', N'456 Đường XYZ, TP.HCM', 'Premium'),
+       ('manager1', 'hashed_password_2', 'manager1@pickleball.vn', '0902345678', N'Trần Thị Manager',
+        @ManagerRoleID, @ActiveStatusID,
+        '1985-05-15', N'Nữ', N'456 Đường XYZ, TP.HCM', 'Premium'),
 
-    ('customer1', 'hashed_password_3', 'customer1@pickleball.vn', '0908765432', N'Lê Hoàng Khách',
-     @CustomerRoleID, @ActiveStatusID,
-     '1995-03-20', N'Nam', N'789 Đường DEF, TP.HCM', 'Basic');
+       ('customer1', 'hashed_password_3', 'customer1@pickleball.vn', '0908765432', N'Lê Hoàng Khách',
+        @CustomerRoleID, @ActiveStatusID,
+        '1995-03-20', N'Nam', N'789 Đường DEF, TP.HCM', 'Basic');
 GO
 
 -- Insert sample facilities
-INSERT INTO Facilities (
-    FacilityName, Address, Province, District, Ward, 
-    Phone, Email, ManagerUserID, Description, Amenities, 
-    StatusID, OpenTime, CloseTime)
-VALUES 
-(N'Pickleball Center Q1', 
- N'123 Lê Lợi', N'TP Hồ Chí Minh', N'Quận 1', N'Phường Bến Nghé',
- '02838123456', 'q1@pickleball.vn',
- (SELECT UserID FROM Users WHERE UserName='manager1'),
- N'Trung tâm pickleball hiện đại với 8 sân chất lượng cao',
- '["Parking", "Toilet", "Shower", "Cafe", "Pro Shop", "Air Conditioning"]',
- (SELECT StatusID FROM FacilityStatuses WHERE StatusName='active'),
- '06:00:00', '22:00:00'),
+INSERT INTO Facilities (FacilityName, Address, Province, District, Ward,
+                        Phone, Email, ManagerUserID, Description, Amenities,
+                        StatusID, OpenTime, CloseTime)
+VALUES (N'Pickleball Center Q1',
+        N'123 Lê Lợi', N'TP Hồ Chí Minh', N'Quận 1', N'Phường Bến Nghé',
+        '02838123456', 'q1@pickleball.vn',
+        (SELECT UserID FROM Users WHERE UserName = 'manager1'),
+        N'Trung tâm pickleball hiện đại với 8 sân chất lượng cao',
+        '["Parking", "Toilet", "Shower", "Cafe", "Pro Shop", "Air Conditioning"]',
+        (SELECT StatusID FROM FacilityStatuses WHERE StatusName = 'active'),
+        '06:00:00', '22:00:00'),
 
-(N'Sporting Complex Q7',
- N'456 Nguyễn Văn Linh', N'TP Hồ Chí Minh', N'Quận 7', N'Phường Tân Phú',
- '02837654321', 'q7@pickleball.vn',
- (SELECT UserID FROM Users WHERE UserName='manager1'),
- N'Khu thể thao đa năng với sân pickleball outdoor',
- '["Parking", "Toilet", "Restaurant", "Swimming Pool"]',
- (SELECT StatusID FROM FacilityStatuses WHERE StatusName='active'),
- '05:30:00', '23:00:00');
+       (N'Sporting Complex Q7',
+        N'456 Nguyễn Văn Linh', N'TP Hồ Chí Minh', N'Quận 7', N'Phường Tân Phú',
+        '02837654321', 'q7@pickleball.vn',
+        (SELECT UserID FROM Users WHERE UserName = 'manager1'),
+        N'Khu thể thao đa năng với sân pickleball outdoor',
+        '["Parking", "Toilet", "Restaurant", "Swimming Pool"]',
+        (SELECT StatusID FROM FacilityStatuses WHERE StatusName = 'active'),
+        '05:30:00', '23:00:00');
 GO
 
 -- Insert sample courts
-INSERT INTO Courts (
-    FacilityID, CourtName, TypeID, SurfaceID,
-    IsIndoor, HasLighting, StatusID, Description)
-VALUES 
+INSERT INTO Courts (FacilityID, CourtName, TypeID, SurfaceID,
+                    IsIndoor, HasLighting, StatusID, Description)
+VALUES
 -- Facility 1 courts
-(1, N'Sân 1A', 
- (SELECT TypeID FROM CourtTypes WHERE TypeName='Standard'),
- (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName='Synthetic'),
- 1, 1, 
- (SELECT StatusID FROM CourtStatuses WHERE StatusName='available'),
+(1, N'Sân 1A',
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Standard'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Synthetic'),
+ 1, 1,
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
  N'Sân trong nhà tiêu chuẩn, phù hợp mọi cấp độ'),
 
 (1, N'Sân 1B',
- (SELECT TypeID FROM CourtTypes WHERE TypeName='Premium'),
- (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName='Wood'),
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Premium'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Wood'),
  1, 1,
- (SELECT StatusID FROM CourtStatuses WHERE StatusName='available'),
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
  N'Sân gỗ cao cấp, trải nghiệm chơi tuyệt vời'),
 
 -- Facility 2 courts
 (2, N'Sân Ngoài 2A',
- (SELECT TypeID FROM CourtTypes WHERE TypeName='Standard'),
- (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName='Concrete'),
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Standard'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Concrete'),
  0, 1,
- (SELECT StatusID FROM CourtStatuses WHERE StatusName='available'),
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
  N'Sân ngoài trời có đèn chiếu sáng');
 GO
 
 -- Insert sample payment methods
 INSERT INTO PaymentMethods (MethodName, Description)
-VALUES 
-(N'Tiền mặt tại quầy', N'Thanh toán bằng tiền mặt tại quầy lễ tân'),
-(N'Chuyển khoản ngân hàng', N'Chuyển khoản qua tài khoản ngân hàng'),
-(N'Ví điện tử MoMo', N'Thanh toán qua ví MoMo'),
-(N'Ví điện tử ZaloPay', N'Thanh toán qua ví ZaloPay');
+VALUES (N'Tiền mặt tại quầy', N'Thanh toán bằng tiền mặt tại quầy lễ tân'),
+       (N'Chuyển khoản ngân hàng', N'Chuyển khoản qua tài khoản ngân hàng'),
+       (N'Ví điện tử MoMo', N'Thanh toán qua ví MoMo'),
+       (N'Ví điện tử ZaloPay', N'Thanh toán qua ví ZaloPay');
 GO
 
 -- Insert sample pricing rules
-INSERT INTO PricingRules (
-    CourtID, DayType, TimeSlotStart, TimeSlotEnd,
-    PricePerHour, EffectiveFrom)
-VALUES 
+INSERT INTO PricingRules (CourtID, DayType, TimeSlotStart, TimeSlotEnd,
+                          PricePerHour, EffectiveFrom)
+VALUES
 -- Standard court (Sân 1A) pricing
 (1, 'Weekday', '06:00:00', '17:00:00', 150000, '2025-01-01'),
 (1, 'Weekday', '17:00:00', '22:00:00', 200000, '2025-01-01'),
@@ -665,33 +738,34 @@ VALUES
 GO
 
 -- Insert sample bookings
-DECLARE @CustomerUserID INT = (SELECT UserID FROM Users WHERE UserName = 'customer1');
-DECLARE @ConfirmedStatusID INT = (SELECT BookingStatusID FROM BookingStatuses WHERE StatusName='confirmed');
-DECLARE @PaidStatusID INT = (SELECT PaymentStatusID FROM PaymentStatuses WHERE StatusName='paid');
+DECLARE @CustomerUserID INT = (SELECT UserID
+                               FROM Users
+                               WHERE UserName = 'customer1');
+DECLARE @ConfirmedStatusID INT = (SELECT BookingStatusID
+                                  FROM BookingStatuses
+                                  WHERE StatusName = 'confirmed');
+DECLARE @PaidStatusID INT = (SELECT PaymentStatusID
+                             FROM PaymentStatuses
+                             WHERE StatusName = 'paid');
 
-INSERT INTO Bookings (
-    UserID, BookingNumber, BookingDate, TotalAmount,
-    BookingStatusID, PaymentStatusID,
-    CustomerName, CustomerPhone, CustomerEmail, Notes)
-VALUES
-    (@CustomerUserID, 'PB202501001', '2025-08-21', 300000,
-     @ConfirmedStatusID,
-     @PaidStatusID,
-     N'Lê Hoàng Khách', '0908765432', 'customer1@pickleball.vn',
-     N'Đặt sân cho nhóm 4 người');
+INSERT INTO Bookings (UserID, BookingNumber, BookingDate, TotalAmount,
+                      BookingStatusID, PaymentStatusID,
+                      CustomerName, CustomerPhone, CustomerEmail, Notes)
+VALUES (@CustomerUserID, 'PB202501001', '2025-08-21', 300000,
+        @ConfirmedStatusID,
+        @PaidStatusID,
+        N'Lê Hoàng Khách', '0908765432', 'customer1@pickleball.vn',
+        N'Đặt sân cho nhóm 4 người');
 GO
 
 -- Insert sample booking details
-INSERT INTO BookingDetails (
-    BookingID, CourtID, SlotDate,
-    StartTime, EndTime, LineAmount)
-VALUES 
-(1, 1, '2025-08-21', '07:00:00', '09:00:00', 300000);
+INSERT INTO BookingDetails (BookingID, CourtID, SlotDate,
+                            StartTime, EndTime, LineAmount)
+VALUES (1, 1, '2025-08-21', '07:00:00', '09:00:00', 300000);
 GO
 
 -- Insert sample facility operating hours
-INSERT INTO FacilityOperatingHours (
-    FacilityID, DayOfWeek, OpenTime, CloseTime, IsClosed)
+INSERT INTO FacilityOperatingHours (FacilityID, DayOfWeek, OpenTime, CloseTime, IsClosed)
 VALUES
 -- Facility 1 operating hours (Mon-Sun)
 (1, 0, '06:00:00', '22:00:00', 0),
@@ -722,64 +796,69 @@ GO
 /*******************************************************************************
 *******************************************************************************/
 --06/10/2025
-CREATE TABLE FacilityImages (
-                                ImageId INT IDENTITY(1,1) PRIMARY KEY,
-                                FacilityId INT NOT NULL,
-                                ImageUrl NVARCHAR(500) NOT NULL,
-                                IsMainImage BIT NOT NULL DEFAULT 0,
-                                DisplayOrder INT NOT NULL DEFAULT 0,
-                                Description NVARCHAR(500) NULL,
-                                CourtImageId INT NULL,
-                                IsDeleted BIT NOT NULL DEFAULT 0,
-                                PublicId NVARCHAR(250) NULL,
+CREATE TABLE FacilityImages
+(
+    ImageId      INT IDENTITY (1,1) PRIMARY KEY,
+    FacilityId   INT           NOT NULL,
+    ImageUrl     NVARCHAR(500) NOT NULL,
+    IsMainImage  BIT           NOT NULL DEFAULT 0,
+    DisplayOrder INT           NOT NULL DEFAULT 0,
+    Description  NVARCHAR(500) NULL,
+    CourtImageId INT           NULL,
+    IsDeleted    BIT           NOT NULL DEFAULT 0,
+    PublicId     NVARCHAR(250) NULL,
 
-                                CONSTRAINT FK_FacilityImages_Facilities FOREIGN KEY (FacilityId)
-                                    REFERENCES Facilities(FacilityId) ON DELETE CASCADE,
+    CONSTRAINT FK_FacilityImages_Facilities FOREIGN KEY (FacilityId)
+        REFERENCES Facilities (FacilityId) ON DELETE CASCADE,
 
-                                CONSTRAINT FK_FacilityImages_CourtImages FOREIGN KEY (CourtImageId)
-                                    REFERENCES CourtImages(ImageId) ON DELETE NO ACTION
+    CONSTRAINT FK_FacilityImages_CourtImages FOREIGN KEY (CourtImageId)
+        REFERENCES CourtImages (ImageId) ON DELETE NO ACTION
 );
 GO
 /*******************************************************************************
 *******************************************************************************/
 --13/10/2025
 
-INSERT INTO Reviews ( FacilityId, CourtId, UserId, BookingId, Rating, Comment, Aspects, ReviewDate, ReviewStatusId, IsVerifiedBooking, IsDeleted)
-VALUES
-    (1, 1, 3, 1, 5, N'Sân rất sạch sẽ và dịch vụ tốt!', 'Cleanliness, Service', '2025-10-13 10:00:00', 1, 1, 0),
-    (2, 3, 4, 3, 4, N'Sân đẹp nhưng hơi đông vào cuối tuần.', 'Facility Quality, Crowdedness', '2025-10-14 11:30:00', 1, 1, 0)
+INSERT INTO Reviews (FacilityId, CourtId, UserId, BookingId, Rating, Comment, Aspects, ReviewDate, ReviewStatusId,
+                     IsVerifiedBooking, IsDeleted)
+VALUES (1, 1, 3, 1, 5, N'Sân rất sạch sẽ và dịch vụ tốt!', 'Cleanliness, Service', '2025-10-13 10:00:00', 1, 1, 0),
+       (2, 3, 4, 3, 4, N'Sân đẹp nhưng hơi đông vào cuối tuần.', 'Facility Quality, Crowdedness', '2025-10-14 11:30:00',
+        1, 1, 0)
 GO
 /*******************************************************************************
 *******************************************************************************/
 --15/10/2025
 
-CREATE TABLE RequestStatuses (
-                                 StatusId INT PRIMARY KEY,
-                                 StatusName NVARCHAR(50) NOT NULL
+CREATE TABLE RequestStatuses
+(
+    StatusId   INT PRIMARY KEY,
+    StatusName NVARCHAR(50) NOT NULL
 );
 
 INSERT INTO RequestStatuses (StatusId, StatusName)
-VALUES (1, 'pending'), (2, 'accept'), (3, 'reject');
+VALUES (1, 'pending'),
+       (2, 'accept'),
+       (3, 'reject');
 
 
 GO
 
-CREATE TABLE OwnerRequests (
-                               RequestId INT PRIMARY KEY IDENTITY(1,1),
-                               FullName NVARCHAR(100) NOT NULL,
-                               Email NVARCHAR(100) NOT NULL,
-                               Phone NVARCHAR(20) NOT NULL,
+CREATE TABLE OwnerRequests
+(
+    RequestId     INT PRIMARY KEY IDENTITY (1,1),
+    FullName      NVARCHAR(100) NOT NULL,
+    Email         NVARCHAR(100) NOT NULL,
+    Phone         NVARCHAR(20)  NOT NULL,
 
-                               StatusId INT NOT NULL DEFAULT 1,                  -- FK → RequestStatuses (1: Pending, 2: Approved, 3: Rejected)
-                               SubmittedAt DATETIME NOT NULL DEFAULT GETDATE(),
-                               ReviewedAt DATETIME NULL,
-                               ReviewedBy INT NULL,                              -- FK → Users(UserId) (admin)
-                               AdminNote NVARCHAR(500) NULL,                     -- Lý do duyệt/từ chối
-                               CreatedUserId INT NULL,                           -- Nếu người gửi đã login
+    StatusId      INT           NOT NULL DEFAULT 1, -- FK → RequestStatuses (1: Pending, 2: Approved, 3: Rejected)
+    SubmittedAt   DATETIME      NOT NULL DEFAULT GETDATE(),
+    ReviewedAt    DATETIME      NULL,
+    ReviewedBy    INT           NULL,               -- FK → Users(UserId) (admin)
+    CreatedUserId INT           NULL,               -- Nếu người gửi đã login
 
-                               FOREIGN KEY (ReviewedBy) REFERENCES Users(UserId),
-                               FOREIGN KEY (CreatedUserId) REFERENCES Users(UserId),
-                               FOREIGN KEY (StatusId) REFERENCES RequestStatuses(StatusId)
+    FOREIGN KEY (ReviewedBy) REFERENCES Users (UserId),
+    FOREIGN KEY (CreatedUserId) REFERENCES Users (UserId),
+    FOREIGN KEY (StatusId) REFERENCES RequestStatuses (StatusId)
 );
 GO
 
@@ -789,8 +868,8 @@ WHERE RoleName = 'manager';
 GO
 
 UPDATE Roles
-SET RoleName = 'user'
-WHERE RoleName = 'customer';
+SET RoleName = 'customer'
+WHERE RoleName = 'user';
 GO
 
 -- Cập nhật pending → reconsider
@@ -811,9 +890,280 @@ GO
 
 /*******************************************************************************
 *******************************************************************************/
---00/00/2025
+--26/10/2025
+ALTER TABLE Users
+    ALTER COLUMN Reset_Token NVARCHAR(100) NULL;
+GO
 
-    
+-- Verify the change
+SELECT COLUMN_NAME,
+       DATA_TYPE,
+       CHARACTER_MAXIMUM_LENGTH
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Users'
+  AND COLUMN_NAME IN ('Reset_Token', 'Reset_Token_Expiry');
+GO
+
+/*******************************************************************************
+*******************************************************************************/
+--02/11/2025
+-- 1. NotificationTypes: Tem thư
+CREATE TABLE dbo.NotificationTypes
+(
+    Id        INT IDENTITY (1,1) PRIMARY KEY,
+    Name      NVARCHAR(100) NOT NULL UNIQUE, -- "Đã duyệt", "Bị từ chối"
+    IsActive  BIT           NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2(7)  NOT NULL DEFAULT SYSUTCDATETIME()
+);
+GO
+-- 2. Notifications: Thư gốc
+CREATE TABLE dbo.Notifications
+(
+    Id        BIGINT IDENTITY (1,1) PRIMARY KEY,
+    TypeId    INT           NOT NULL,
+    Title     NVARCHAR(255) NOT NULL,
+    Message   NVARCHAR(500) NULL, -- Tóm gọn, đủ đọc
+    RequestId BIGINT        NULL,
+    CreatedAt DATETIME2(7)  NOT NULL DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+
+    CONSTRAINT FK_Notifications_Type
+        FOREIGN KEY (TypeId) REFERENCES dbo.NotificationTypes (Id)
+);
+GO
+-- 3. NotificationStatuses: Biên lai nhận thư
+CREATE TABLE dbo.NotificationStatuses
+(
+    Id             BIGINT IDENTITY (1,1) PRIMARY KEY,
+    NotificationId BIGINT       NOT NULL,
+    UserId         INT          NOT NULL,
+    IsRead         BIT          NOT NULL DEFAULT 0,
+    CreatedAt      DATETIME2(7) NOT NULL DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+
+    CONSTRAINT FK_Status_Notification
+        FOREIGN KEY (NotificationId) REFERENCES dbo.Notifications (Id) ON DELETE CASCADE,
+    CONSTRAINT FK_Status_User
+        FOREIGN KEY (UserId) REFERENCES dbo.Users (UserID) ON DELETE CASCADE,
+    CONSTRAINT UQ_Notification_User
+        UNIQUE (NotificationId, UserId)
+);
+GO
+-- INDEXES
+CREATE INDEX IX_Notifications_TypeId ON dbo.Notifications (TypeId);
+CREATE INDEX IX_Notifications_CreatedAt_DESC ON dbo.Notifications (CreatedAt DESC);
+
+CREATE NONCLUSTERED INDEX IX_Status_User_Read
+    ON dbo.NotificationStatuses (UserId, IsRead DESC)
+    INCLUDE (NotificationId, CreatedAt);
+
+CREATE INDEX IX_Status_NotificationId ON dbo.NotificationStatuses (NotificationId);
+GO
+-- Insert default notification types
+INSERT INTO dbo.NotificationTypes (Name)
+VALUES (N'Yêu cầu đã gửi'),
+       (N'Đã duyệt'),
+       (N'Bị từ chối'),
+       (N'Yêu cầu đăng ký mới');
+GO
+
+/*******************************************************************************
+*******************************************************************************/
+--15/11/2025
+SET NOCOUNT ON;
+BEGIN TRY
+    BEGIN TRAN;
+
+    PRINT 'Bắt đầu chuyển đổi sang N-N...';
+
+    -- 1. Xóa sạch ràng buộc cũ (cách an toàn nhất)
+    DECLARE @sql NVARCHAR(MAX) = N'';
+
+    SELECT @sql += N'ALTER TABLE dbo.Users DROP CONSTRAINT [' + name + N'];' + CHAR(10)
+    FROM sys.objects
+    WHERE parent_object_id = OBJECT_ID('dbo.Users')
+      AND type IN ('F', 'D')  -- FK và Default
+      AND (
+        EXISTS (SELECT 1 FROM sys.columns c WHERE c.object_id = parent_object_id AND c.name = 'RoleID')
+            OR name LIKE '%RoleID%' OR name LIKE '%FK_%Users_%Roles%'
+        );
+
+    IF LEN(@sql) > 0
+        BEGIN
+            PRINT 'Đang xóa ràng buộc cũ...';
+            EXEC sp_executesql @sql;
+        END
+
+    -- 2. Xóa cột RoleID nếu còn
+    IF COL_LENGTH('dbo.Users', 'RoleID') IS NOT NULL
+        BEGIN
+            ALTER TABLE dbo.Users DROP COLUMN RoleID;
+            PRINT 'ĐÃ XÓA CỘT RoleID';
+        END
+
+    -- 3. Tạo bảng UserRoles
+    IF OBJECT_ID('dbo.UserRoles') IS NULL
+        BEGIN
+            CREATE TABLE dbo.UserRoles (
+                                           UserID INT NOT NULL,
+                                           RoleID INT NOT NULL,
+                                           CONSTRAINT PK_UserRoles PRIMARY KEY (UserID, RoleID),
+                                           CONSTRAINT FK_UserRoles_Users  FOREIGN KEY (UserID) REFERENCES dbo.Users(UserID)  ON DELETE CASCADE,
+                                           CONSTRAINT FK_UserRoles_Roles  FOREIGN KEY (RoleID) REFERENCES dbo.Roles(RoleID) ON DELETE CASCADE
+            );
+            CREATE NONCLUSTERED INDEX IX_UserRoles_RoleID ON dbo.UserRoles(RoleID);
+            PRINT 'ĐÃ TẠO BẢNG dbo.UserRoles THÀNH CÔNG!';
+        END
+    ELSE
+        BEGIN
+            PRINT 'Bảng UserRoles đã tồn tại rồi → bỏ qua';
+        END
+
+    -- 4. Chuyển dữ liệu (theo trạng thái mới nhất của bạn)
+    IF NOT EXISTS (SELECT 1 FROM dbo.UserRoles WHERE UserID IN (1,2,3,4,5,6))
+        BEGIN
+            INSERT INTO dbo.UserRoles (UserID, RoleID) VALUES
+                                                           (1,1), (2,2), (3,3), (4,2), (5,1), (6,3);
+            PRINT 'Đã chèn dữ liệu role hiện tại';
+        END
+
+    COMMIT TRAN;
+    PRINT '=== HOÀN TẤT 100% – BÂY GIỜ LÀ N-N CHÍNH GỐC! ===';
+
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRAN;
+    PRINT 'LỖI: ' + ERROR_MESSAGE();
+    THROW;
+END CATCH
+GO   -- ← QUAN TRỌNG: phải có GO ở đây mới chạy được phần dưới
+
+-- KIỂM TRA KẾT QUẢ NGAY
+PRINT CHAR(13) + 'DANH SÁCH USER VÀ ROLE SAU KHI CHUYỂN:';
+SELECT
+    u.UserID,
+    u.Email,
+    u.FullName,
+    ISNULL(STRING_AGG(r.RoleName, ', '), 'Chưa có role') AS Roles
+FROM dbo.Users u
+         LEFT JOIN dbo.UserRoles ur ON u.UserID = ur.UserID
+         LEFT JOIN dbo.Roles r ON ur.RoleID = r.RoleID
+GROUP BY u.UserID, u.Email, u.FullName
+ORDER BY u.UserID;
+
+/*******************************************************************************
+*******************************************************************************/
+--27/12/2025
+INSERT INTO Courts (FacilityID, CourtName, TypeID, SurfaceID,
+                    IsIndoor, HasLighting, StatusID, Description)
+VALUES
+(1, N'Sân 1C',
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Standard'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Synthetic'),
+ 1, 1,
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
+ N'Sân trong nhà, mặt sân tổng hợp, phù hợp tập luyện'),
+
+(1, N'Sân 1D',
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Premium'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Wood'),
+ 1, 1,
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
+ N'Sân trong nhà cao cấp, dành cho thi đấu và giải phong trào');
+GO
+--------
+INSERT INTO Courts (FacilityID, CourtName, TypeID, SurfaceID,
+                    IsIndoor, HasLighting, StatusID, Description)
+VALUES
+(2, N'Sân Ngoài 2B',
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Standard'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Concrete'),
+ 0, 0,
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
+ N'Sân ngoài trời, không mái che, phù hợp chơi ban ngày'),
+
+(2, N'Sân Ngoài 2C',
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Standard'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Concrete'),
+ 0, 1,
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
+ N'Sân ngoài trời có đèn, chơi được buổi tối'),
+
+(2, N'Sân Ngoài 2D',
+ (SELECT TypeID FROM CourtTypes WHERE TypeName = 'Premium'),
+ (SELECT SurfaceID FROM CourtSurfaces WHERE SurfaceName = 'Synthetic'),
+ 0, 1,
+ (SELECT StatusID FROM CourtStatuses WHERE StatusName = 'available'),
+ N'Sân ngoài trời chất lượng cao, dùng cho giải đấu');
+GO
+/*******************************************************************************
+*******************************************************************************/
+--28/12/2025
+CREATE TABLE Amenities (
+    AmenityID   INT IDENTITY(1,1) PRIMARY KEY,
+    AmenityCode VARCHAR(30) NOT NULL UNIQUE,
+    AmenityName NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(255),
+    IsActive    BIT NOT NULL DEFAULT 1
+);
+GO
+INSERT INTO Amenities (AmenityCode, AmenityName)
+VALUES
+('PARKING',  N'Bãi đỗ xe'),
+('TOILET',   N'Nhà vệ sinh'),
+('SHOWER',   N'Phòng tắm'),
+('CAFE',     N'Quán cà phê'),
+('PROSHOP',  N'Cửa hàng dụng cụ'),
+('AC',       N'Máy lạnh');
+GO
+
+CREATE TABLE FacilityAmenities (
+    FacilityID INT NOT NULL,
+    AmenityID  INT NOT NULL,
+    CreatedAt  DATETIME NOT NULL DEFAULT GETDATE(),
+    PRIMARY KEY (FacilityID, AmenityID),
+    FOREIGN KEY (FacilityID) REFERENCES Facilities(FacilityID),
+    FOREIGN KEY (AmenityID) REFERENCES Amenities(AmenityID)
+);
+GO
+INSERT INTO FacilityAmenities (FacilityID, AmenityID)
+SELECT
+    f.FacilityID,
+    a.AmenityID
+FROM Facilities f
+CROSS APPLY OPENJSON(f.Amenities) j
+JOIN Amenities a
+    ON
+    (
+        (j.value = 'Parking' AND a.AmenityCode = 'PARKING') OR
+        (j.value = 'Toilet' AND a.AmenityCode = 'TOILET') OR
+        (j.value = 'Shower' AND a.AmenityCode = 'SHOWER') OR
+        (j.value = 'Cafe' AND a.AmenityCode = 'CAFE') OR
+        (j.value = 'Pro Shop' AND a.AmenityCode = 'PROSHOP') OR
+        (j.value = 'Air Conditioning' AND a.AmenityCode = 'AC')
+    )
+WHERE f.Amenities IS NOT NULL;
+GO
+---
+--test dữ liệu trước khi xóa cột
+SELECT
+    f.FacilityName,
+    a.AmenityName
+FROM Facilities f
+JOIN FacilityAmenities fa ON f.FacilityID = fa.FacilityID
+JOIN Amenities a ON fa.AmenityID = a.AmenityID
+ORDER BY f.FacilityName;
+------
+ALTER TABLE Facilities
+DROP COLUMN Amenities;
+GO
+
+/*******************************************************************************
+*******************************************************************************/
+--00/00/2025
+/*******************************************************************************
+*******************************************************************************/
+--00/00/2025
 /*******************************************************************************
 *******************************************************************************/
 --00/00/2025

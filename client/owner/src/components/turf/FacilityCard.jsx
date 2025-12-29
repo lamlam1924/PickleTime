@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 
 const FacilityCard = ({ turf }) => {
   const isLoggedIn = useSelector((state) => state.auth.isAuthenticated);
+  const mainImage = turf.mainImageUrl || turf.imageUrls?.[0] || "/banner-1.png";
+  
   return (
       <div className="card bg-base-100 shadow-xl animate-bounce-fade-in">
         <figure>
           <img
-              src={turf.mainImageUrl}
+              src={mainImage}
               alt={turf.facilityName}
               className="w-full h-48 object-cover"
           />
